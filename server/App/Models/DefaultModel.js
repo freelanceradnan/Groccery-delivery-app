@@ -47,7 +47,7 @@ const OrderSchema = new mongoose.Schema({
             price: { type: Number, required: true }
         }
     ], 
-    shippingAddress: AddressSchema, 
+    shippingAddress: [AddressSchema], 
     paymentMethod: { type: String },
     subtotal: { type: Number },    
     deliveryFee: { type: Number }, 
@@ -87,9 +87,8 @@ const DeliveryPartnerSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: false }
     
 }, { timestamps: true });
-const User = mongoose.model('User', UserSchema);
-const Product = mongoose.model('Product', ProductSchema);
-const Order = mongoose.model('Order', OrderSchema);
-const DeliveryPartner = mongoose.model('DeliveryPartner', DeliveryPartnerSchema);
+export const User = mongoose.model('User', UserSchema);
+export const Product = mongoose.model('Product', ProductSchema);
+export const Order = mongoose.model('Order', OrderSchema);
+export const DeliveryPartner = mongoose.model('DeliveryPartner', DeliveryPartnerSchema);
 
-export { User, Product, Order, DeliveryPartner };
