@@ -11,4 +11,7 @@ router.post('/login',login)
 router.get('/products/flash-deails',ProductController.getFlashDeals)
 router.get('/products',ProductController.getProducts)
 router.get('/product/:id',ProductController.getProduct)
+router.post('/product',ProductController.addProduct)
+router.put('/product/:id',ProductController.updateProduct)
+router.delete('/product/:id',ProductController.deleteProduct)
 export default router

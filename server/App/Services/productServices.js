@@ -1,5 +1,5 @@
 import { Product } from "../Models/DefaultModel.js";
-
+//get flash product
 export async function getMyFlashDeals() { 
     try {
       
@@ -21,6 +21,7 @@ export async function getMyFlashDeals() {
         return { success: false, message: error.message }; 
     }
 }
+//getmyproducts
 export const getMyProducts = async (category, search, minPrice, maxPrice, sort) => {
     try {
         const where = {};
@@ -71,6 +72,7 @@ export const getMyProducts = async (category, search, minPrice, maxPrice, sort) 
         return({ error: error.message });
     }
 };
+//getsingle product withid
 export const getMyProduct = async (id) => {
     try {
       
@@ -88,5 +90,46 @@ export const getMyProduct = async (id) => {
         return { success: true, message: { ...product, discount } };
     } catch (error) {
         return { success: false, message: "failed to get product" };
+    }
+};
+//create product
+export const addMyProduct = async (data) => {
+    try {
+        const newProduct = new Product(data);
+        const savedProduct = await newProduct.save();
+        return { success: true, message: savedProduct };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+};
+
+//update product
+export const updateMyProduct = async (id, data) => {
+    try {
+        
+        const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true }).lean();
+       
+        if (!updatedProduct) {
+            return { success: false, message: "Product not found" };
+        }
+
+        return { success: true, product: updatedProduct };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+};
+//delete product
+export const deleteMyProduct = async (id) => {
+    try {
+        
+        const updatedProduct = await Product.findByIdAndDelete(id)
+       
+        if (!updatedProduct) {
+            return { success: false, message: "failed to delete product" };
+        }
+
+        return { success: true,message:"product deleted success!" };
+    } catch (error) {
+        return { success: false, message: error.message };
     }
 };

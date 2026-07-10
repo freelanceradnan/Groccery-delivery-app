@@ -1,4 +1,4 @@
-import { getMyFlashDeals, getMyProduct, getMyProducts } from "../Services/productServices.js"
+import { addMyProduct, deleteMyProduct, getMyFlashDeals, getMyProduct, getMyProducts, updateMyProduct } from "../Services/productServices.js"
 
 //get api/products/flash-deails
 export const getFlashDeals=async(req,res)=>{
@@ -50,4 +50,89 @@ export const getProduct=async(req,res)=>{
         res.status(200).json({success:false,message:"GetProduct Failed!"})
     }
 }
+//create product post
+export const addProduct = async (req, res) => {
+   
+    const { data } = req.body; 
+    if(!data){
+         return res.status(400).json({ success: false, message: "data not found!" });
+    }
+    try {
+         const result = await addMyProduct(data);
+        
+       
+        if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+        
+       
+        return res.status(201).json({ success: true, message: "Product added successfully", product: result.message });
+        
+    } catch (error) {
+       
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+//update
+
+export const updateProduct = async (req, res) => {
+    const { id } = req.params;
+    const { data } = req.body; 
+     
+    try {
+        
+        if (!id || !data) {
+            return res.status(400).json({ success: false, message: "ID and Data are required!" });
+        }
+
+       
+        const result = await updateMyProduct(id, data);
+
+     
+        if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message || "Update failed" });
+        }
+
+      
+        return res.status(200).json({ 
+            success: true, 
+            message: "Product updated successfully", 
+            product: result.product 
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+//delete
+export const deleteProduct = async (req, res) => {
+    const { id } = req.params;
+   
+     
+    try {
+        
+        if (!id) {
+            return res.status(400).json({ success: false, message: "ID are required!" });
+        }
+
+       
+        const result = await deleteMyProduct(id);
+
+     
+        if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message || "delete failed" });
+        }
+
+      
+        return res.status(200).json({ 
+            success: true, 
+            message: "Product deleted success!", 
+            product: result.product 
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
 
