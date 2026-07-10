@@ -1,4 +1,4 @@
-import { getMyFlashDeals, getMyProduct } from "../Services/productServices.js"
+import { getMyFlashDeals, getMyProduct, getMyProducts } from "../Services/productServices.js"
 
 //get api/products/flash-deails
 export const getFlashDeals=async(req,res)=>{
@@ -12,14 +12,14 @@ export const getFlashDeals=async(req,res)=>{
         res.status(400).json({success:false,message:"failed to get products"})
     }
 }
-//get api/product ? query
+//get api/product/query {search,filter}
 export const getProducts = async (req, res) => {
     try {
         
         const { category, search, minPrice, maxPrice, sort } = req.query;
 
        
-        const result = await getMyProduct(category, search, minPrice, maxPrice, sort);
+        const result = await getMyProducts(category, search, minPrice, maxPrice, sort);
 
         if (!result.success) {
             
@@ -36,4 +36,18 @@ export const getProducts = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+
+//get api/product/id
+export const getProduct=async(req,res)=>{
+    const {id}=req.params
+    try {
+        const result=await getMyProduct(id)
+        if(!result.success){
+            return res.status(400).json({success:false,message:"GetProduct Failed!"})
+        }
+        res.status(200).json({success:true,message:result.message})
+    } catch (error) {
+        res.status(200).json({success:false,message:"GetProduct Failed!"})
+    }
+}
 

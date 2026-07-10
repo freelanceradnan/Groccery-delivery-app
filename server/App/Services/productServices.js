@@ -21,7 +21,7 @@ export async function getMyFlashDeals() {
         return { success: false, message: error.message }; 
     }
 }
-export const getMyProduct = async (category, search, minPrice, maxPrice, sort) => {
+export const getMyProducts = async (category, search, minPrice, maxPrice, sort) => {
     try {
         const where = {};
 
@@ -56,8 +56,8 @@ export const getMyProduct = async (category, search, minPrice, maxPrice, sort) =
         const products = await Product.find(where)
                                       .sort(sortBy)
                                       .lean();
-
-        
+      
+       
         const productsWithDiscount = products.map((p) => {
             const discount = p.originalPrice && p.price 
                 ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) 
@@ -66,8 +66,27 @@ export const getMyProduct = async (category, search, minPrice, maxPrice, sort) =
         });
 
         
-        return ({ message: productsWithDiscount });
+        return ({ success:true,message: productsWithDiscount });
     } catch (error) {
         return({ error: error.message });
+    }
+};
+export const getMyProduct = async (id) => {
+    try {
+      
+        const product = await Product.findById(id).lean(); 
+        
+        if (!product) {
+            return { success: false, message: "failed to get product" };
+        }
+        
+        const discount = product.originalPrice && product.price 
+            ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) 
+            : 0;
+            
+      
+        return { success: true, message: { ...product, discount } };
+    } catch (error) {
+        return { success: false, message: "failed to get product" };
     }
 };

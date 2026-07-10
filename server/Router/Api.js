@@ -10,4 +10,5 @@ router.post('/login',login)
 //product
 router.get('/products/flash-deails',ProductController.getFlashDeals)
 router.get('/products',ProductController.getProducts)
+router.get('/product/:id',ProductController.getProduct)
 export default router
