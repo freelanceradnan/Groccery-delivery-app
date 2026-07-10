@@ -1,15 +1,13 @@
 import express from "express";
 import { register,login } from "../App/Controllers/authController.js";
-
+import *as ProductController from '../App/Controllers/productController.js'
 
 const router=express.Router()
-router.get('/api',function(req,res){
-    res.json({
-        status:"success",
-        message:"db connection successfull"
-    })
-})
+//login
 router.post('/register',register)
 router.post('/login',login)
 
+//product
+router.get('/products/flash-deails',ProductController.getFlashDeals)
+router.get('/products',ProductController.getProducts)
 export default router

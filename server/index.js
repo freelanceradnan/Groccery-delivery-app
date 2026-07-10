@@ -36,7 +36,7 @@ app.set('etag', false);
 ConnectDB();
 
 // connection route
-app.use('/', router);
+app.use('/api', router);
 
 app.listen(PORT, () => {
     console.log(`app is running on ${PORT}`);

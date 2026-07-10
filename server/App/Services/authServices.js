@@ -21,11 +21,11 @@ export async function RegisterMyUser(name, email, password) {
     }
 
     const passHash = await bcrypt.hash(password, 10);
-
+ 
     const user = await User.create({
-      name: name,
-      email: normalizeEmail,
-      password: passHash,
+      name:name,
+    email:normalizeEmail,
+    password:passHash
     });
 
     if (!user) {
@@ -46,6 +46,7 @@ export async function RegisterMyUser(name, email, password) {
       user: userdata,
     };
   } catch (error) {
+    console.error("Registration Function Error:", error);
     return { success: false, message: "Internal server error" };
   }
 }
@@ -64,7 +65,7 @@ export async function LoginMyUser(email,password) {
     if (!passMatch) {
       return { success: false, message: "User and password incorrect!" };
     }
-     console.log('d')
+     
     const token = await TokenEncorde(user._id);
     if (!token) {
       return { success: false, message: "failed to decode token" };

@@ -5,7 +5,7 @@ import { LoginMyUser, RegisterMyUser } from "../Services/authServices.js";
 export const register = async (req, res) => {
     const { name, email, password } = req.body;
 
-    // ১. ফিল্ড ভ্যালিডেশন
+
     if (!name || !email || !password) {
         return res.status(400).json({ success: false, message: 'Please provide all fields' });
     }
