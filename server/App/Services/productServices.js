@@ -30,7 +30,8 @@ export const getMyProducts = async (category, search, minPrice, maxPrice, sort) 
         if (category && category !== "all") {
             where.category = category;
         }
-
+       
+        
       
         if (search) {
             where.name = { $regex: search, $options: "i" };
