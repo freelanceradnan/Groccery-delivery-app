@@ -4,8 +4,10 @@ import *as ProductController from '../App/Controllers/productController.js'
 import authMiddleware from './../App/Middlewares/authMiddleware.js';
 import adminMiddleware from "../App/Middlewares/adminMiddleware.js";
 import *as OrderController from "../App/Controllers/orderController.js";
+import *as addressController from "../App/Controllers/addressController.js";
 import { uploader } from "../App/Controllers/uploadController.js";
 import multer from 'multer';
+import { createAddress, deleteAddress, getAddresses, updateAddress } from "../App/Controllers/addressController.js";
 const upload = multer({ storage: multer.memoryStorage() });
 
 
@@ -33,4 +35,10 @@ router.get('/getuserorder/:id',authMiddleware,OrderController.GetOrder)
 router.put('/updateorder/:id',authMiddleware,adminMiddleware,OrderController.updateOrderStatus)
 router.get('/getallorder',authMiddleware,adminMiddleware,OrderController.getAllOrders)
 router.get('/getorderlocation/:id',adminMiddleware,OrderController.getOrderLocation)
+
+//address router
+router.get('/getaddresses',authMiddleware,addressController.getAddresses)
+router.post('/createaddress',authMiddleware,addressController.createAddress)
+router.put('/updateaddress/:id',authMiddleware,addressController.updateAddress)
+router.delete('/deleteaddress/:id',authMiddleware,addressController.deleteAddress)
 export default router

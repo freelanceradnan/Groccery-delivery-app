@@ -91,4 +91,5 @@ export const User = mongoose.model('User', UserSchema);
 export const Product = mongoose.model('Product', ProductSchema);
 export const Order = mongoose.model('Order', OrderSchema);
 export const DeliveryPartner = mongoose.model('DeliveryPartner', DeliveryPartnerSchema);
+export const Address = mongoose.model('Address', AddressSchema);
 
