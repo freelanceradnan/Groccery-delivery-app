@@ -6,10 +6,12 @@ import adminMiddleware from "../App/Middlewares/adminMiddleware.js";
 import *as OrderController from "../App/Controllers/orderController.js";
 import *as addressController from "../App/Controllers/addressController.js";
 import *as adminController from "../App/Controllers/adminController.js";
+import *as deliveryController from "../App/Controllers/deliveryPartner.js";
 import { uploader } from "../App/Controllers/uploadController.js";
 import multer from 'multer';
 import { createAddress, deleteAddress, getAddresses, updateAddress } from "../App/Controllers/addressController.js";
 import { getAdminStates } from "../App/Controllers/adminController.js";
+import deliveryAuth from "../App/Middlewares/deliveryMiddleware.js";
 const upload = multer({ storage: multer.memoryStorage() });
 
 
@@ -50,4 +52,12 @@ router.get('/delivery-partners',authMiddleware,adminMiddleware,adminController.g
 router.post('/delivery-partners',authMiddleware,adminMiddleware,adminController.createDeliveryPartner)
 router.put('/delivery-partners/:id',authMiddleware,adminMiddleware,adminController.updateDeliveryPartner)
 router.put('/orders/:id/assign',authMiddleware,adminMiddleware,adminController.assignDeliveryPartner)
+//delivery partner
+router.post('/login/deliverypartner',deliveryController.loginDeliveryPartner)
+router.get('/my-deliveries',deliveryAuth,deliveryController.getMyDeliveries)
+router.get('/my-deliveries/:id',deliveryAuth,deliveryController.getDeliveryDetail)
+router.put('/my-deliveries/:id/complete',deliveryAuth,deliveryController.completeDelivery)
+router.put('/my-deliveries/:id/cancel',deliveryAuth,deliveryController.cancelDelivery)
+router.put('/my-deliveries/:id',deliveryAuth,deliveryController.updateDeliveryStatus)
+router.put('/my-deliveries/:id/location',deliveryAuth,deliveryController.updateLocation)
 export default router
