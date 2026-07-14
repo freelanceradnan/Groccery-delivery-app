@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { ArrowUpRightIcon, ChevronDownIcon, LogOut, MapPinIcon, MenuIcon, PackageIcon, SearchIcon, ShieldIcon, ShoppingCartIcon, SpaceIcon, UserIcon, XIcon } from 'lucide-react';
+import { CartContext } from '../contexts/CartContext';
 
 const Navbar = () => {
     const user={
@@ -10,10 +11,7 @@ const Navbar = () => {
         email:'reactorbro722@gmail.com',
         isAdmin:true
     }
-    const { cartCount, setIsCartOpen } = { 
-    cartCount: 5, 
-    setIsCartOpen: (_data) => {} 
-};
+    const { cartCount, setIsCartOpen } = useContext(CartContext)
 const [searchQuery,setSearchQuery]=useState("")
 const [userMenuOpen,setUserMenuOpen]=useState(false)
 const navigate=useNavigate()

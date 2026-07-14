@@ -1,9 +1,10 @@
 import { Plus, Star } from 'lucide-react';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CartContext } from '../contexts/CartContext';
 
 const ProductCart = ({product}) => {
-    const { addtocart } = { addtocart: (product) => { console.log(product); } };
+    const { addToCart } =useContext(CartContext);
     const currency=import.meta.env.VITE_CURRENCY_SYMBOL||"$"
     const navigate=useNavigate()
     return (
@@ -76,7 +77,7 @@ const ProductCart = ({product}) => {
     <button 
       onClick={(e) => {
         e.stopPropagation();
-        addtocart(product);
+        addToCart(product);
       }} 
       className="size-7 sm:size-8 rounded-full bg-orange-500 text-white flex items-center justify-center shrink-0 hover:bg-orange-600 transition-all active:scale-90 shadow-sm"
       title="Add to cart"

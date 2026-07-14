@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Home from './Home';
 import Footer from '../components/Footer';
+import CartSideBar from '../components/CartSideBar';
 
 const AppLayout = () => {
     return (
@@ -15,6 +16,7 @@ const AppLayout = () => {
         <Home/>
         <Outlet/>
         <Footer/>
+        <CartSideBar/>
         </div>
         
     );
