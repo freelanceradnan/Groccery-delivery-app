@@ -4,6 +4,7 @@ import Banner from '../components/Banner';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Home from './Home';
+import Footer from '../components/Footer';
 
 const AppLayout = () => {
     return (
@@ -13,7 +14,7 @@ const AppLayout = () => {
         <Navbar/>
         <Home/>
         <Outlet/>
-        <h2>Footer</h2>
+        <Footer/>
         </div>
         
     );

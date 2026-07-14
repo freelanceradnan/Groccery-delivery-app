@@ -4,6 +4,8 @@ import Features from '../components/Features';
 import HomeCategories from '../components/HomeCategories';
 import PopularProduct from '../components/PopularProduct';
 import AppPromoBanner from '../components/AppPromoBanner';
+import Newsletter from '../components/Newsletter';
+
 
 const Home = () => {
     return (
@@ -13,6 +15,8 @@ const Home = () => {
           <HomeCategories/>
           <PopularProduct/>
           <AppPromoBanner/>
+          <Newsletter/>
+        
         </div>
     );
 };
