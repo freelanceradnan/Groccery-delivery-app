@@ -22,10 +22,10 @@ const Login = () => {
                 <div className='w-full max-w-md flex flex-col items-center gap-6'>
 
                     {/* Logo */}
-                    <div className='flex gap-2 items-center justify-center'>
+                    <Link to="/" className='flex gap-2 items-center justify-center'>
                         <img src={assets.favicon} className='h-8 w-8 object-contain' alt="logo" />
                         <div className='text-2xl font-bold text-emerald-950 tracking-tight'>Supacart</div>
-                    </div>
+                    </Link>
 
                     {/* Header Heading Toggle */}
                     <div className='text-center'>

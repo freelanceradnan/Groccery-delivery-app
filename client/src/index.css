@@ -6,3 +6,16 @@
 .bg-cream{
     background-color: #faf7f2;
 }
+.dropdown-link{
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    gap: 2px;
+    padding:8px 0;
+    color:#807d7a;
+    font-size: small;
+}
+.dropdown-link:hover{
+    color:black;
+    background:#FFF7ED
+}
