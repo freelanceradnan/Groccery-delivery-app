@@ -19,7 +19,7 @@ const [userMenuOpen,setUserMenuOpen]=useState(false)
 const navigate=useNavigate()
     return (
         <nav className='bg-[#FFFFFF] sticky top-0 z-50 border-b border-[#e7e0d1]'>
-            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12 gap-4'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14 gap-4'>
 
            <Link to="/" className='flex items-center gap-2 text-[22px] font-medium shrink-0'>
            <img src={assets.favicon} alt="" className='w-10 h-10'/> Supacart
