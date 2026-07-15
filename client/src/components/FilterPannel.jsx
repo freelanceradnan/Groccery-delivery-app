@@ -10,7 +10,7 @@ const FilterPannel = ({categories,category,minPrice,maxPrice,updateFilter,clearF
             <div className='space-y-1'>
                {categoriesWithAll.map((cat)=>(
                 <button key={cat.slug} onClick={()=>updateFilter("category",cat.slug)}
-                className={`block w-full text-left px-1 py-1 text-sm rounded-md transition-all ${category===cat.slug?"bg-[#1B3022] text-white":"hover:bg-[#FAF7F2]"}`}>{cat.name}</button>
+                className={`block w-full text-left px-2 py-1 text-sm rounded-md transition-all ${category===cat.slug?"bg-[#1B3022] text-white":"hover:bg-[#FAF7F2]"}`}>{cat.name}</button>
                ))}
             </div>
         </div>

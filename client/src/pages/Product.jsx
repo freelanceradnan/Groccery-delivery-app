@@ -43,7 +43,7 @@ const Product = () => {
   const clearFilters = () => setSearchParams({});
   const activeCategory = categoriesData.find((c) => c.slug === category);
   const hasfilter = category || organic || minPrice || maxPrice;
-
+ console.log(hasfilter)
   useEffect(() => {
     fetchProduct();
   }, [category, organic, sort, page, minPrice, maxPrice]);
