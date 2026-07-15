@@ -39,7 +39,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = (productId) => {
     setItems((prev) => prev.filter((item) => item.product._id !== productId));
-    setIsCartOpen(false)
+    
   };
 
 

@@ -11,13 +11,17 @@ const AppLayout = () => {
     return (
         
         <div>
-        <Banner/>
-        <Navbar/>
-        <Home/>
-        <Outlet/>
-        <Footer/>
-        <CartSideBar/>
-        </div>
+      <Banner />
+      <Navbar />
+      
+    
+      <main>
+        <Outlet />
+      </main>
+      
+      <Footer />
+      <CartSideBar />
+    </div>
         
     );
 };

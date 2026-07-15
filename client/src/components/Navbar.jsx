@@ -27,9 +27,10 @@ const navigate=useNavigate()
             {/* navlink-desktops */}
             
            <div className='hidden md:flex items-center gap-6 text-sm text-zinc-600'>
-           <Link>Home</Link>
-           <Link>Products</Link>
-           <Link>Deals</Link>
+           
+            <Link to="/"  onClick={()=>window.scrollTo(0,0)}>Home</Link>
+            <Link to="/products"  onClick={()=>window.scrollTo(0,0)}>Products</Link>
+            <Link to="/deals" onClick={()=>window.scrollTo(0,0)}>Deals</Link>
            </div>
 
             <form action="" className='hidden sm:flex flex-1 max-w-sm text-xs sm:text-sm'>

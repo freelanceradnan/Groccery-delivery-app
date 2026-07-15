@@ -62,7 +62,7 @@ return (
                 {/* bottom */}
                 <div className='border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4'>
               <p className='text-xs text-white/50'>
-             © 2026 Adnan Dev. All rights reserved.
+             © 2026 <a href="https://github.com/freelanceradnan">Adnan Dev</a>. All rights reserved.
               </p>
               <div className='flex gap-2'>
                 {footerData.bottom.links.map((link,i)=>(
