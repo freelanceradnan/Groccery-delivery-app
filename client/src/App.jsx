@@ -9,6 +9,7 @@ import Orders from "./pages/MyOrders";
 import Addresses from "./pages/Addresses";
 import Home from "./pages/Home";
 import ProductPage from "./pages/ProductPage";
+import OrderDetails from "./pages/OrderDetails";
 function App() {
   return (
    <Routes>
@@ -22,7 +23,7 @@ function App() {
     <Route path="deals" element={<Deals />} />
     <Route path="checkout" element={<Checkout />} />
     <Route path="orders" element={<Orders />} />
-    <Route path="orders/:id" element={<Orders />} />
+    <Route path="orders/:id" element={<OrderDetails/>} />
     <Route path="addresses" element={<Addresses />} />
   </Route>
 
