@@ -3,12 +3,13 @@ import { assets } from '../assets/assets';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User } from 'lucide-react'; 
 import toast from 'react-hot-toast';
-import { useRegisterUserMutation } from '../Feature/ApiSlice';
+import { useLoginUserMutation, useRegisterUserMutation } from '../Feature/ApiSlice';
 
 const Login = () => {
     const navigate=useNavigate()
     const [loginstate, setLoginState] = useState(true);
     const [registeruser,{isError,isLoading:registerLoading}]=useRegisterUserMutation()
+    const [loginUser,{isError:loginError,isLoading:loginLoading}]=useLoginUserMutation()
     //register users data
     const [registerData,setRegisterData]=useState({
         name:"",
@@ -52,9 +53,18 @@ const Login = () => {
         [name]:value
     }))
    }
-   console.log(loginData)
-   const submitLoginHandler=()=>{
-
+   //user login handler
+   const submitLoginHandler=async(e)=>{
+ e.preventDefault()
+ try {
+    const response=await loginUser(loginData).unwrap()
+    localStorage.setItem('token',response.token)
+    localStorage.setItem('auth_user',JSON.stringify(response.user))
+    toast.success('User Login Success!')
+    navigate('/')
+ } catch (error) {
+    toast.error(error?.data?.message||"user login failed!")
+ }
    }
     return (
         <div className='min-h-screen flex'>
@@ -196,9 +206,14 @@ const Login = () => {
                                     </div>
                                 </div>
 
+                                {loginLoading?
+                            <button className='w-full bg-[#043A23] hover:bg-[#032d1b] text-white font-semibold py-3 px-4 rounded-xl mt-2 transition shadow-sm'>
+                                    Signing user ...
+                                </button>:
                                 <button className='w-full bg-[#043A23] hover:bg-[#032d1b] text-white font-semibold py-3 px-4 rounded-xl mt-2 transition shadow-sm'>
                                     Sign In
-                                </button>
+                                </button>    
+                            }
                             </>
                         )}
                     </form>
