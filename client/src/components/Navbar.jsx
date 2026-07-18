@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import React, { useContext, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { ArrowUpRightIcon, ChevronDownIcon, LogOut, MapPinIcon, MenuIcon, PackageIcon, SearchIcon, ShieldIcon, ShoppingCartIcon, SpaceIcon, UserIcon, XIcon } from 'lucide-react';
@@ -12,7 +12,15 @@ const Navbar = () => {
         isAdmin:true
     }
     const { cartCount, setIsCartOpen } = useContext(CartContext)
-const [searchQuery,setSearchQuery]=useState("")
+   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery,setSearchQuery]=useState("")
+const handleSearchSubmit = (e) => {
+  e.preventDefault(); 
+  
+  if (searchQuery.trim()) {
+    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  }
+};
 const [userMenuOpen,setUserMenuOpen]=useState(false)
 const navigate=useNavigate()
     return (
@@ -33,7 +41,7 @@ const navigate=useNavigate()
             <Link to="/deals" onClick={()=>window.scrollTo(0,0)}>Deals</Link>
            </div>
 
-            <form action="" className='hidden sm:flex flex-1 max-w-sm text-xs sm:text-sm'>
+            <form action="" className='hidden sm:flex flex-1 max-w-sm text-xs sm:text-sm' onSubmit={handleSearchSubmit}>
                 <div className='relative w-full'>
                     <SearchIcon className='absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-zinc-500'/>
                 <input type="text" name="" id="" placeholder='Search for groceries ...' value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className='w-full pl-8 bg-orange-50 rounded-full ring ring-orange-600/15 focus:ring-orange-600/30 focus:outline-none py-1'/>

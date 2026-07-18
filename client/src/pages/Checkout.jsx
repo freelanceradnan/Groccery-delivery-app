@@ -16,7 +16,7 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('card');
     
-    // Initial state setup
+  
     const [address, setAddress] = useState({
         id: "",
         label: "Home",
@@ -44,12 +44,10 @@ const Checkout = () => {
         navigate('/orders');
     };
 
-    // GUARANTEED RUN: Sets address data cleanly on mount
     useEffect(() => {
-        const addressesArray = dummyAddressData?.addresses || dummyAddressData; // Handle variations in data nesting
-        
+        const addressesArray = dummyAddressData?.addresses || dummyAddressData;
         if (Array.isArray(addressesArray) && addressesArray.length > 0) {
-            // Find default address, or grab the very first available item
+            
             const defaultAddr = addressesArray.find((a) => a.isDefault) || addressesArray[0];
             
             if (defaultAddr) {
@@ -66,7 +64,7 @@ const Checkout = () => {
                 });
             }
         }
-    }, []); // Empty array guarantees execution exactly once when layout loads
+    }, []); 
 
     if (items.length === 0) {
         return (
@@ -118,6 +116,28 @@ const Checkout = () => {
                         {step === 'address' && <CheckoutAddress address={address} setAddress={setAddress} setStep={setStep} user={dummyAddressData} />}
                         {step === 'payment' && <CheckoutPayment paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} setStep={setStep} />}
                         {step === 'review' && <CheckoutReview address={address} items={items} handlePlaceOrder={handlePlaceOrder} loading={loading} total={total} />}
+                    </div>
+                    {/* order-summery */}
+                    <div className='bg-white rounded-2xl p-5 h-fit sticky top-24'>
+                <h3 className='text-sm font-semibold text-[#032E15] mb-4'>Order Summary</h3>
+                <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                        <span className='text-light'>Subtotal({items.length}) items</span>
+                        <span>{currency}{cartTotal.toFixed()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className='text-light'>Delivery</span>
+                        <span>{deliveryFee===0?<span className='text-green-500'>Free</span>:`${currency}${deliveryFee.toFixed()}`}</span>
+                    </div>
+                     <div className="flex justify-between">
+                        <span className='text-light'>Fax</span>
+                        <span>{currency}{tax.toFixed()}</span>
+                    </div>
+                    <div className="flex justify-between pt-3 border-t border-orange-200 text-base font-semibold">
+                        <span>total</span>
+                        <span>{currency}{total.toFixed()}</span>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
