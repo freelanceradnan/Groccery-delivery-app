@@ -3,7 +3,7 @@ import React from 'react';
 
 const AddressCard = ({addr,onEditHandler,setAddress}) => {
     const deleteHandler=()=>{
-        console.log(id)
+        console.log('d')
     }
     return (
         <div key={addr._id} className='max-w-3xl bg-white rounded-2xl p-6 items-start justify-between flex'>
