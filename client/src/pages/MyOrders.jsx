@@ -28,7 +28,7 @@ const MyOrders = () => {
         setOrders(filteredOrders);
         setLoading(false);
     };
-
+    console.log(orders)
     useEffect(() => {
         if (searchParams.get("clearCart")) {
             clearCart("");

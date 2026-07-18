@@ -55,7 +55,7 @@ export default function OrderTimeLine({ order }) {
                 {i < allStatuses.length - 1 && (
                   <div
                     className={`w-0.5 h-12 ${
-                      i < currentIdx ? "bg-app-green" : "bg-app-border"
+                      i < currentIdx ? "bg-[#1b3022]" : "bg-blue-100"
                     }`}
                   />
                 )}
@@ -63,7 +63,7 @@ export default function OrderTimeLine({ order }) {
               <div className="pb-6">
                 <p
                   className={`text-sm font-semibold ${
-                    isCompleted ? "text-app-green" : "text-app-text-light"
+                    isCompleted ? "text-[#1b3022]" : "text-light"
                   }`}
                 >
                   {status}
