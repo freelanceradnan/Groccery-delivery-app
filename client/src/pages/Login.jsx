@@ -1,11 +1,61 @@
 import React, { useState } from 'react';
 import { assets } from '../assets/assets';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User } from 'lucide-react'; 
+import toast from 'react-hot-toast';
+import { useRegisterUserMutation } from '../Feature/ApiSlice';
 
 const Login = () => {
+    const navigate=useNavigate()
     const [loginstate, setLoginState] = useState(true);
+    const [registeruser,{isError,isLoading:registerLoading}]=useRegisterUserMutation()
+    //register users data
+    const [registerData,setRegisterData]=useState({
+        name:"",
+        email:"",
+        password:""
+    })
+    //register user handler change
+    const changeRegisterHandler=(e)=>{
+    const {name,value}=e.target
+    setRegisterData((prev)=>({
+        ...prev,
+        [name]:value
+    }))
+    }
+    //submit register users
+   const submitRegisterHandler=async(e)=>{
+   e.preventDefault()
+   try {
+    const response=await registeruser(registerData).unwrap()
+    localStorage.setItem('token',response.token)
+    localStorage.setItem('auth_user',JSON.stringify(response.user))
+    setTimeout(() => {
+     navigate('/')   
+    }, 1000);
+    toast.success('Registration Success!')
+  
+   } catch (error) {
+    toast.error('Registration Failed!',error)
+   }
+   }
+   //login user data
+   const [loginData,setLoginData]=useState({
+   email:"",
+   password:""
+   })
+   //login change Handler
+   const changeLoginHandler=(e)=>{
+    const {name,value}=e.target
+    setLoginData((prev)=>({
+        ...prev,
+        [name]:value
+    }))
+   }
+   console.log(loginData)
+   const submitLoginHandler=()=>{
 
+   }
     return (
         <div className='min-h-screen flex'>
             {/* left-side */}
@@ -49,7 +99,7 @@ const Login = () => {
                     </div>
 
                     {/* Form Layout */}
-                    <form className='w-full flex flex-col gap-4' onSubmit={(e) => e.preventDefault()}>
+                    <form className='w-full flex flex-col gap-4' onSubmit={loginstate===true?submitLoginHandler:submitRegisterHandler}>
                         {!loginstate ? (
                             <>
                                 {/* Name Input */}
@@ -58,9 +108,13 @@ const Login = () => {
                                     <div className='relative flex items-center'>
                                         <User className='absolute left-3 text-gray-400 h-5 w-5' />
                                         <input 
-                                            type="text" 
+                                            type="text"
+                                            name='name'
+                                            value={registerData.name}
+                                            onChange={changeRegisterHandler}
                                             placeholder="Enter your name"
                                             className='w-full pl-10 pr-4 py-2.5 bg-[#EEF2F6] rounded-xl outline-none border border-transparent focus:border-emerald-600 transition text-sm text-gray-800'
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -71,9 +125,13 @@ const Login = () => {
                                     <div className='relative flex items-center'>
                                         <Mail className='absolute left-3 text-gray-400 h-5 w-5' />
                                         <input 
-                                            type="email" 
+                                        name='email'
+                                            type="email"
+                                            value={registerData.email}
+                                            onChange={changeRegisterHandler}
                                             placeholder="ad@gmail.com"
                                             className='w-full pl-10 pr-4 py-2.5 bg-[#EEF2F6] rounded-xl outline-none border border-transparent focus:border-emerald-600 transition text-sm text-gray-800'
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -84,16 +142,25 @@ const Login = () => {
                                     <div className='relative flex items-center'>
                                         <Lock className='absolute left-3 text-gray-400 h-5 w-5' />
                                         <input 
+                                        name='password'
                                             type="password" 
+                                            value={registerData.password}
+                                            onChange={changeRegisterHandler}
                                             placeholder="••••••••"
                                             className='w-full pl-10 pr-4 py-2.5 bg-[#EEF2F6] rounded-xl outline-none border border-transparent focus:border-emerald-600 transition text-sm text-gray-800'
+                                            required
                                         />
                                     </div>
                                 </div>
 
+                                {registerLoading ?
+                            <button className='w-full bg-[#043A23] hover:bg-[#032d1b] text-white font-semibold py-3 px-4 rounded-xl mt-2 transition shadow-sm'>
+                                    Registering user
+                                </button> :
                                 <button className='w-full bg-[#043A23] hover:bg-[#032d1b] text-white font-semibold py-3 px-4 rounded-xl mt-2 transition shadow-sm'>
-                                    Create Account
-                                </button>
+                                    Register user
+                                </button>     
+                            }
                             </>
                         ) : (
                             <>
@@ -103,7 +170,10 @@ const Login = () => {
                                     <div className='relative flex items-center'>
                                         <Mail className='absolute left-3 text-gray-400 h-5 w-5' />
                                         <input 
-                                            type="email" 
+                                           name='email'
+                                           value={setLoginData.email}
+                                            type="email"
+                                            onChange={changeLoginHandler}
                                             placeholder="ad@gmail.com"
                                             className='w-full pl-10 pr-4 py-2.5 bg-[#EEF2F6] rounded-xl outline-none border border-transparent focus:border-emerald-600 transition text-sm text-gray-800'
                                         />
@@ -116,6 +186,9 @@ const Login = () => {
                                     <div className='relative flex items-center'>
                                         <Lock className='absolute left-3 text-gray-400 h-5 w-5' />
                                         <input 
+                                        value={setLoginData.password}
+                                        onChange={changeLoginHandler}
+                                           name='password'
                                             type="password" 
                                             placeholder="••••••••"
                                             className='w-full pl-10 pr-4 py-2.5 bg-[#EEF2F6] rounded-xl outline-none border border-transparent focus:border-emerald-600 transition text-sm text-gray-800'

@@ -17,6 +17,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 
 const router=express.Router()
+
 //login
 router.post('/register',register)
 router.post('/login',login)

@@ -36,6 +36,7 @@ app.set('etag', false);
 ConnectDB();
 
 // connection route
+
 app.use('/api', router);
 
 app.listen(PORT, () => {

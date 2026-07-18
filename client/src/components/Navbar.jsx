@@ -4,16 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { ArrowUpRightIcon, ChevronDownIcon, LogOut, MapPinIcon, MenuIcon, PackageIcon, SearchIcon, ShieldIcon, ShoppingCartIcon, SpaceIcon, UserIcon, XIcon } from 'lucide-react';
 import { CartContext } from '../contexts/CartContext';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
-    const user={
-        name:'adnan dev',
-        email:'reactorbro722@gmail.com',
-        isAdmin:true
-    }
+  const navigate=useNavigate()
+  //checkout user login or not
+    const rawUser = localStorage.getItem('auth_user');
+   const user = rawUser ? JSON.parse(rawUser) : null;
+
     const { cartCount, setIsCartOpen } = useContext(CartContext)
    const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery,setSearchQuery]=useState("")
+  //search items set query
 const handleSearchSubmit = (e) => {
   e.preventDefault(); 
   
@@ -22,7 +24,13 @@ const handleSearchSubmit = (e) => {
   }
 };
 const [userMenuOpen,setUserMenuOpen]=useState(false)
-const navigate=useNavigate()
+//userlogout
+const logoutUser=()=>{
+localStorage.removeItem('token')
+localStorage.removeItem('auth_user')
+toast.success('Logout SuccessFully!')
+navigate('/login')
+}
     return (
         <nav className='bg-[#FFFFFF] sticky top-0 z-50 border-b border-[#e7e0d1]'>
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14 gap-4'>
@@ -106,7 +114,7 @@ const navigate=useNavigate()
             </Link>
           )}
           <div className='border-t border-slate-300'>
-             <button className='dropdown-link md:hidden w-full'><LogOut size={16} />Deals</button>
+             <button className='dropdown-link md:hidden w-full' onClick={logoutUser}><LogOut size={16} />Logout</button>
           </div>
         </div>
       </div>
