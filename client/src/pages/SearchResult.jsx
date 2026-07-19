@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { dummyProducts } from '../assets/assets';
+// import { dummyProducts } from '../assets/assets';
 import { HomeIcon, Search } from 'lucide-react';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
+import { useGetAllProductQuery } from '../Feature/ApiSlice';
 
 const SearchResult = () => {
-    const [products,setProducts]=useState([])
-    const [loading,setLoading]=useState(true)
     const [searchParams]=useSearchParams()
-    const query=searchParams.get('q')||""
-    useEffect(()=>{
-        if(!query) return ;
-        setLoading(true)
-        setProducts(dummyProducts.filter((p)=>p.name.toLowerCase().includes(query.toLowerCase())))
-        setLoading(false)
-    },[query])
+    const [products,setProducts]=useState([])
+      const search=searchParams.get('q')||""
+      
+     const { data: product = [], isLoading, isFetching } = useGetAllProductQuery({ search });
+    const [loading,setLoading]=useState(true)
+    
     return (
         <div className='min-h-screen bg-amber-50'>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -36,27 +34,27 @@ const SearchResult = () => {
         {/* header */}
         <div className="mb-8">
             <h1 className="text-2xl font-semibold text-green-500 mb01">
-                Results for "{query}"
+                Results for "{search}"
             </h1>
             <p className="text-sm text-light">
-                {loading ?"Searching...":`${products.length} items found!`}
+                {isLoading ?"Searching...":`${product.length} items found!`}
             </p>
         </div>
         {/* results */}
-        {loading ?(
+        {isLoading ?(
             <Loading/>
-        ):products.length===0?(
+        ):product?.length===0?(
             <div className='text-center py-20'>
 <Search className='size-16 text-green-500 mx-auto mb-4'/>
 <h2 className='text-xl font-semibold text-green-300 mb-2'>No Results Found!</h2>
 <p className='text-sm text-light mb-6 max-w-md mx-auto'>
-    We coundn't find any products matching "{query}" .Try a differnt search term.
+    We coundn't find any products matching "{search}" .Try a differnt search term.
 </p>
 <Link to="/" className='inline-flex px-5 py-2.5 bg-green-500 text-white text-sm font-medium rounded-lg'>Browse All Products</Link>
             </div>
         ):(
             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
-{products.map((product)=>(
+{product?.map((product)=>(
     <ProductCart key={product._id} product={product}/>
 ))}
             </div>

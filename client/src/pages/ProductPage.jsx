@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
-import { dummyProducts } from "../assets/assets";
+
 import Loading from "../components/Loading";
 import {
   ArrowLeftIcon,
@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 import DummyReviewsSection from "../components/DummyReviewsSection";
 import ProductCart from "../components/ProductCart";
+import { useGetAllProductQuery } from "../Feature/ApiSlice";
 
 const ProductPage = () => {
+  const {data:products}=useGetAllProductQuery()
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
   const navigate = useNavigate();
   const { id } = useParams();
@@ -30,17 +32,17 @@ const ProductPage = () => {
   useEffect(() => {
   setLocalQuantity(1);
   window.scrollTo(0, 0);
-  const foundProduct = dummyProducts.find((p) => p._id === id);
+  const foundProduct = products?.find((p) => p._id === id);
 
   if (foundProduct) {
     setProduct(foundProduct);
-    setRelatedProduct(dummyProducts.filter((p) => p._id !== id));
+    setRelatedProduct(products?.filter((p) => p._id !== id));
   } else {
     setProduct(null);
   }
 
   setLoading(false);
-}, [id]);
+}, [id,products]);
 
   if (loading) return <Loading />;
   if (!product) return null;

@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { dummyProducts } from '../assets/assets';
 import { Zap } from 'lucide-react';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
+import { useGetFlashDealsQuery } from '../Feature/ApiSlice';
 
 const FlashDeals = () => {
     const [products,setProducts]=useState([])
-    const [loading,setLoading]=useState(true)
+    
+    const {data,isLoading:loading}=useGetFlashDealsQuery()
+    
     useEffect(()=>{
-        setProducts(dummyProducts.filter((p)=>p.stock>0))
-        setTimeout(() => {
-        setLoading(false)
-        }, 1000);
-    },[])
+        setProducts(data?.filter((p)=>p.stock>0))
+    },[data])
     return (
         <div className='min-h-screen bg-[#faf7f2]'>
             {/* banner */}
@@ -28,7 +27,7 @@ const FlashDeals = () => {
         </div>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
     {loading?(<Loading/>):(
-        products.length===0?(
+        products?.length===0?(
 <div className='text-center py-16'>
 <Zap className='size-16 text-black mx-auto mb-4'/>
 <h2 className='text-lg font-semibold text-green-500 mb-2'>No deals right now</h2>
@@ -36,7 +35,7 @@ const FlashDeals = () => {
 </div>
         ):(
 <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4'>
-{products.map((product)=>product.stock>0 && (
+{products?.map((product)=>product.stock>0 && (
     <ProductCart key={product._id} product={product}/>
 ))}
 </div>

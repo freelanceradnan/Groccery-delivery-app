@@ -62,7 +62,25 @@ export const ApiSlice=createApi({
      method:'POST',
      body:userdata
      })
+    }),
+    getAllProduct: builder.query({
+        query: ({ category, search, minPrice, maxPrice, sort } = {}) => ({
+            url: '/products',
+            method: 'GET',
+            params: { category, search, minPrice, maxPrice, sort } 
+        }),
+    
+        transformResponse: (response) => response?.products || response?.message || response,
+        
+        providesTags: ['products']
+    }),
+    getFlashDeals:builder.query({
+     query:()=>({
+     url:'products/flash-deails',
+     method:'GET',
+     }),
+     transformResponse:(response)=>response.message.message||response
     })
    })
 })
-export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation} = ApiSlice;
+export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation,useGetAllProductQuery,useGetFlashDealsQuery} = ApiSlice;

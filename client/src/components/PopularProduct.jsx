@@ -1,17 +1,22 @@
 import { ArrowRightIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { dummyProducts } from '../assets/assets';
 import ProductCart from './ProductCart';
+import { useGetAllProductQuery } from '../Feature/ApiSlice';
+import Loading from './Loading';
 
 
 
 const PopularProduct = () => {
     const [product,setProduct]=useState([])
-    
+    const {data:allProducts,isLoading}=useGetAllProductQuery()
+ 
     useEffect(()=>{
-setProduct(dummyProducts.slice(0,10))
-    },[])
+    if(allProducts){
+        setProduct(allProducts.products)
+    }
+    },[allProducts])
+    if(isLoading) return <Loading/>
     return (
         <section className='pb-16'>
             <div className="max-w-7xl mx-auto">
@@ -25,7 +30,7 @@ setProduct(dummyProducts.slice(0,10))
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 xl:gap-8">
-                {product.map((product)=>(
+                {product?.slice(0,10).map((product)=>(
                     <ProductCart key={product._id} product={product}/>
                 ))}
                 </div>

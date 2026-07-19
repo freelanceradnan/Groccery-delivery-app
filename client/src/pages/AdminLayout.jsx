@@ -1,9 +1,14 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Navigate, NavLink, Outlet } from "react-router-dom";
 import { PlusIcon, PackageSearchIcon, ShoppingBagIcon, LogOutIcon, BarChart3Icon, ShieldIcon, Truck } from "lucide-react";
 import Navbar from "../components/Navbar";
 
 
 export default function AdminLayout() {
+     const user=localStorage.getItem('auth_user')
+     const mainuser=JSON.parse(user)
+     const isAdmin=mainuser?.isAdmin===true
+   
+
     const AdminLinkData = [
         { to: "/admin", label: "Dashboard", icon: BarChart3Icon },
         { to: "/admin/products/new", label: "Add Product", icon: PlusIcon },
@@ -12,7 +17,9 @@ export default function AdminLayout() {
         { to: "/admin/delivery-partners", label: "Delivery Partners", icon: Truck },
         { to: "/", label: "Exit", icon: LogOutIcon },
     ];
-
+if(!isAdmin){
+    return <Navigate to ="/" replace/>
+}
     return (
         <div className="h-screen overflow-hidden">
             <div className="max-lg:hidden">
