@@ -19,6 +19,7 @@ import AdminDeliveryPartners from "./pages/AdminDeliveryPartners";
 import DeliveryLogin from "./pages/DeliveryLogin";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import DeliveryLayout from "./pages/DeliveryLayout";
+import ProtectedUser from "./components/ProtectedUser";
 function App() {
   return (
    <Routes>
@@ -31,9 +32,11 @@ function App() {
     <Route path="search" element={<SearchResult />} />
     <Route path="deals" element={<Deals />} />
     <Route path="checkout" element={<Checkout />} />
-    <Route path="orders" element={<Orders />} />
+    <Route path="" element={<ProtectedUser/>}>
+      <Route path="orders" element={<Orders />} />
     <Route path="orders/:id" element={<OrderDetails/>} />
     <Route path="addresses" element={<Addresses />} />
+    </Route>
   </Route>
   {/* adminpages */}
   <Route path="/admin" element={<AdminLayout/>}>
