@@ -5,8 +5,10 @@ import { assets } from '../assets/assets';
 import { ArrowUpRightIcon, ChevronDownIcon, LogOut, MapPinIcon, MenuIcon, PackageIcon, SearchIcon, ShieldIcon, ShoppingCartIcon, SpaceIcon, UserIcon, XIcon } from 'lucide-react';
 import { CartContext } from '../contexts/CartContext';
 import toast from 'react-hot-toast';
-
+import { ApiSlice } from '../Feature/ApiSlice';
+import { useDispatch } from 'react-redux';
 const Navbar = () => {
+  const dispatch=useDispatch()
   const navigate=useNavigate()
   //checkout user login or not
     const rawUser = localStorage.getItem('auth_user');
@@ -28,6 +30,7 @@ const [userMenuOpen,setUserMenuOpen]=useState(false)
 const logoutUser=()=>{
 localStorage.removeItem('token')
 localStorage.removeItem('auth_user')
+dispatch(ApiSlice.util.resetApiState());//reset api states after logout 
 toast.success('Logout SuccessFully!')
 navigate('/login')
 }

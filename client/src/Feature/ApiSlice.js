@@ -26,7 +26,7 @@ const baseQueryWithReauth=async(args,api,extraOptions)=>{
 export const ApiSlice=createApi({
    reducerPath:'api',
    baseQuery:baseQueryWithReauth,
-   tagTypes:['users'],
+   tagTypes:['users','address'],
    endpoints:(builder)=>({
     registerUser:builder.mutation({
         query:(userData)=>({
@@ -80,7 +80,42 @@ export const ApiSlice=createApi({
      method:'GET',
      }),
      transformResponse:(response)=>response.message.message||response
-    })
+    }),
+    addAddress:builder.mutation({
+    query:(payload)=>({
+    url:'/createaddress',
+    method:'POST',
+    body:payload
+    }),
+    invalidatesTags:['address']
+    }),
+    updateAddress:builder.mutation({
+    query:({id,data})=>({
+    url:`/updateaddress/${id}`,
+    method:'PUT',
+    body:data
+    }),
+    invalidatesTags:['address']
+    }),
+    getUsersAddress:builder.query({
+        query:()=>({
+        url:'/getaddresses',
+        method:'GET',
+        }),
+        transformResponse:(response)=>response.data||response,
+        providesTags:['address']
+    }),
+    deleteUserAddress:builder.mutation({
+    query:(id)=>({
+    url:`/deleteaddress/${id}`,
+    method:'DELETE'
+    }),
+  invalidatesTags:['address']
+    }),
+    
+    
    })
 })
-export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation,useGetAllProductQuery,useGetFlashDealsQuery} = ApiSlice;
+export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation,useGetAllProductQuery,useGetFlashDealsQuery,
+    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation
+} = ApiSlice;

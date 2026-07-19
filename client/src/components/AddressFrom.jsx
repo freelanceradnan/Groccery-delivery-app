@@ -22,30 +22,36 @@ const AddressFrom = ({resetForm,handleSubmit,form,setForm,editingId}) => {
     <div className="space-y-4">
     <div>
         <label className='block text-sm font-medium text-[#1B3022] mb-1.5'>Label</label>
-        <input type="text" placeholder='Home, Work, etc.' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.label} onChange={(e)=>setform({...form,label:e.target.value})}/>
+        <input type="text" placeholder='Home, Work, etc.' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.label} onChange={(e)=>setForm({...form,label:e.target.value})}/>
     </div>
      <div>
         <label className='block text-sm font-medium text-[#1B3022] mb-1.5'>Street Address</label>
-        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.address} onChange={(e)=>setform({...form,address:e.target.value})}/>
+        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.address} onChange={(e)=>setForm({...form,address:e.target.value})}/>
     </div>
     <div className='grid grid-cols-2 gap-2'>
        <div>
          <label className='block text-sm font-medium text-[#1B3022] mb-1.5'>City</label>
-        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.city} onChange={(e)=>setform({...form,city:e.target.value})}/>
+        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.city} onChange={(e)=>setForm({...form,city:e.target.value})}/>
        </div>
         <div>
              <label className='block text-sm font-medium text-[#1B3022] mb-1.5'>State</label>
-        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.state} onChange={(e)=>setform({...form,state:e.target.value})}/>
+        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.state} onChange={(e)=>setForm({...form,state:e.target.value})}/>
         </div>
     </div>
     <div className='grid grid-cols-2 gap-2'>
        <div>
-         <label className='block text-sm font-medium text-[#1B3022] mb-1.5'>Street Address</label>
-        <input type="text" placeholder='' required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.label} onChange={(e)=>setform({...form,address:e.target.value})}/>
+         <label className='block text-sm font-medium text-[#1B3022] mb-1.5'>zip</label>
+        <input type="number" placeholder='' name="zip" required className='w-full px-4 py-2.5 text-sm rounded-xl border border-black/20 focus:border-green-500/50 outline-none' value={form.zip} onChange={(e)=>setForm({...form,zip:e.target.value})}/>
        </div>
        <div className='items-end pb-1 flex'>
         <label htmlFor="" className='flex items-center gap-2 cursor-pointer'>
-        <input type="checkbox" name="" id="" checked={form.isDefault} onChange={(e)=>({...form,isDefault:e.target.value})}/>
+        <input 
+  type="checkbox" 
+  name="isDefault" 
+  id="isDefault" 
+  checked={form.isDefault} 
+  onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}
+/>
         <span className='text-sm text-blue-500'>Set as default</span>
         </label>
        </div>

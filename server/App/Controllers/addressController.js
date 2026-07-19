@@ -4,7 +4,7 @@ import { createMyAddress, deleteMyAddress, getMyAddress, updateMyAddress } from 
 //getall adresses
 export const getAddresses = async (req, res) => {
     const userid = req.user.id; 
-    
+
     try {
         const result = await getMyAddress(userid);
         
@@ -19,6 +19,7 @@ export const getAddresses = async (req, res) => {
 };
 //createnew adresses
 export const createAddress = async (req, res) => {
+       
     const { label, address, city, state, zip, isDefault, lat, lng } = req.body;
     const userId = req.user.id; 
     try {

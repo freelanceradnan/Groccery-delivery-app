@@ -4,9 +4,15 @@ import { MapPinIcon, PlusIcon } from 'lucide-react';
 import Loading from '../components/Loading';
 import AddressCard from '../components/AddressCard';
 import AddressFrom from '../components/AddressFrom';
+import { useAddAddressMutation, useGetUsersAddressQuery, useUpdateAddressMutation, } from '../Feature/ApiSlice';
+import { toast } from 'react-hot-toast';
 
 const Addresses = () => {
+   const {data}=useGetUsersAddressQuery()
+    const [crateAddress]=useAddAddressMutation()
+    const [updateAddress]=useUpdateAddressMutation()
     const [addresses,setAddresses]=useState([])
+   
     const [loading,setLoading]=useState(true)
     const [showForm,setShowForm]=useState(false)
     const [editingId,setEditingId]=useState(null)
@@ -18,6 +24,7 @@ const Addresses = () => {
         zip:"",
         isDefault:false
     })
+   
 const resetForm=()=>{
     setForm({label:"",address:"",city:"",state:"",zip:""})
     setForm({isDefault:false})
@@ -36,14 +43,75 @@ const onEditHandler=(address)=>{
     setEditingId(address._id)
     setShowForm(true)
 }
+//geolocation
+const getLocation = (retries = 3) => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return reject(new Error("Geolocation not supported"));
+    }
+    const callGPS = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          if (retries > 0) {
+            retries--; 
+            setTimeout(callGPS, 1000)
+          } else {
+            reject(new Error(error.message || "Failed after 3 retries"));
+          }
+        },
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+      );
+    };
+    callGPS();
+  });
+};
 useEffect(()=>{
-setAddresses(dummyAddressData)
+if(data){
+  setAddresses(data)
+}
 setTimeout(() => {
     setLoading(false)
 }, 1000);
-},[])
-const handleSubmit=()=>{
-
+},[data])
+//submit edit/update handler
+const handleSubmit=async(e)=>{
+e.preventDefault()
+const coords=await getLocation()
+const payload={...form,...coords}
+try {
+  if(editingId){
+  const response=await updateAddress({id: editingId, 
+  data: payload}).unwrap()
+  if(response.success===true){
+    toast.success('Updated success!')
+resetForm()
+  }
+  
+  }
+  else{
+  const response=await crateAddress(payload).unwrap()
+  if(response.success){
+     toast.success("Address added successfully!")
+      resetForm()
+  }
+ 
+  }
+} catch (error) {
+  toast.error("internal server error!")
+}
+}
+const deleteHandler=async(id)=>{
+  try {
+    
+  } catch (error) {
+    
+  }
 }
     return (
         <div className='min-h-screen bg-[#FAF7F2]'>
@@ -59,11 +127,11 @@ const handleSubmit=()=>{
         </button>
     </div>
     {/* form-modal */}
-{showForm && <AddressFrom resetForm={resetForm} handleSubmit={handleSubmit} form={form} editingId={editingId}/>}
+{showForm && <AddressFrom resetForm={resetForm} handleSubmit={handleSubmit} form={form} editingId={editingId} setForm={setForm}/>}
     {/* addresses list */}
     {loading?(
 <Loading/>    
-):addresses.length===0?(
+):addresses?.length===0?(
     <div className='text-center py-16'>
 <MapPinIcon className='size-16 text-[#e5e7eb] mx-auto mb-4'/>
 <h2 className="text-lg font-semibold text-[#2d4a35] mb-2">No Addresses saved</h2>
@@ -71,7 +139,7 @@ const handleSubmit=()=>{
     </div>
 ):(
     <div className='space-y-4'>
-{addresses.map((addr)=>(
+{addresses?.map((addr)=>(
 <AddressCard key={addr._id} addr={addr} onEditHandler={onEditHandler} setAddress={setAddresses}/>
 ))}
     </div>

@@ -1,10 +1,20 @@
 import { CheckIcon, MapPinIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 import React from 'react';
+import { useDeleteUserAddressMutation } from '../Feature/ApiSlice';
+import toast from 'react-hot-toast';
 
 const AddressCard = ({addr,onEditHandler,setAddress}) => {
-    const deleteHandler=()=>{
-        console.log('d')
-    }
+    const [deleteAddr]=useDeleteUserAddressMutation()
+    const deleteHandler=async(id)=>{
+  try {
+    await deleteAddr(id).unwrap()
+    
+    toast.success('delete address success')
+    setAddress([])
+  } catch (error) {
+     toast.error('delete address failed')
+  }
+}
     return (
         <div key={addr._id} className='max-w-3xl bg-white rounded-2xl p-6 items-start justify-between flex'>
            {/* left  */}
