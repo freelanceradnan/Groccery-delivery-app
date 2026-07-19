@@ -41,7 +41,28 @@ export const ApiSlice=createApi({
      method:'POST',
      body:userData
      })
+    }),
+    emailVerify:builder.mutation({
+    query:(email)=>({
+     url:'/verifyemail',
+     method:'POST',
+     body:email
+    })
+    }),
+    otpVerify:builder.mutation({
+     query:({email,otp})=>({
+     url:'/veryotp',
+     method:'POST',
+     body:{email,otp}
+     })
+    }),
+    changePassword:builder.mutation({
+     query:(userdata)=>({
+     url:'/changepassword',
+     method:'POST',
+     body:userdata
+     })
     })
    })
 })
-export const { useRegisterUserMutation,useLoginUserMutation} = ApiSlice;
+export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation} = ApiSlice;

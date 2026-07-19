@@ -18,7 +18,8 @@ const UserSchema = new mongoose.Schema({
     phone: { type: String },
     avatar: { type: String },
     addresses: [AddressSchema],
-    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }]
+    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
+    otp:{type:String,default:'0'}
 }, { timestamps: true });
 
 const ProductSchema = new mongoose.Schema({

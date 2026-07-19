@@ -7,6 +7,7 @@ import *as OrderController from "../App/Controllers/orderController.js";
 import *as addressController from "../App/Controllers/addressController.js";
 import *as adminController from "../App/Controllers/adminController.js";
 import *as deliveryController from "../App/Controllers/deliveryPartner.js";
+import *as forgetController from  '../App/Controllers/ForgetPassword.js'
 import { uploader } from "../App/Controllers/uploadController.js";
 import multer from 'multer';
 import { createAddress, deleteAddress, getAddresses, updateAddress } from "../App/Controllers/addressController.js";
@@ -21,6 +22,10 @@ const router=express.Router()
 //login
 router.post('/register',register)
 router.post('/login',login)
+//forgot password
+router.post('/verifyemail',forgetController.VerifyEmail)
+router.post('/veryotp',forgetController.VerifyOtp)
+router.post('/changepassword',forgetController.ChangePassword)
 
 //product
 router.get('/products/flash-deails',ProductController.getFlashDeals)
