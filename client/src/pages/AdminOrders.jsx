@@ -3,40 +3,34 @@ import { TruckIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { dummyDashboardOrdersData, dummyDeliveryPartnerData } from "../assets/assets";
 import Loading from "../components/Loading";
+import { useGetAdminOrdersQuery, useUpdateAdminOrderStatusMutation } from "../Feature/ApiSlice";
 export default function AdminOrders() {
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
-
+    const {data:allOrders}=useGetAdminOrdersQuery()
+    const [updateStatus]=useUpdateAdminOrderStatusMutation()
     const [orders, setOrders] = useState([]);
+    
     const [partners, setPartners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [assignModal, setAssignModal] = useState(null);
     const [selectedPartner, setSelectedPartner] = useState("");
 
     useEffect(() => {
-        let timer1, timer2;
-        
-        const fetchOrders = async () => {
-            setOrders(dummyDashboardOrdersData);
-            timer1 = setTimeout(() => setLoading(false), 1000);
-        };
-
-        const fetchPartners = async () => {
-            setPartners(dummyDeliveryPartnerData);
-            timer2 = setTimeout(() => setLoading(false), 1000);
-        };
-
-        fetchOrders();
-        fetchPartners();
-
-        return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        };
-    }, []);
+        if(allOrders){
+            setLoading(true)
+            setOrders(allOrders)
+            setLoading(false)
+        }
+    }, [allOrders]);
 
     const handleStatusChange = async (id, newStatus) => {
-        console.log(id, newStatus);
-        // Handle API route updates here
+        try {
+            const response=await updateStatus({id:id,body:newStatus})
+            console.log(response)
+        } catch (error) {
+            
+        }
+       
     };
 
     const handleAssign = async () => {
@@ -46,7 +40,12 @@ export default function AdminOrders() {
         setSelectedPartner("");
     };
 
-    const statusOptions = ["Placed", "Confirmed", "Assigned", "Packed", "Out for Delivery", "Delivered", "Cancelled"];
+    const statusOptions = ["Placed",
+    "Confirmed",
+    "Assigned",
+    "Packed",
+    "Out for Delivery",
+    "Delivered"];
     const statusColors = {
         Placed: "bg-blue-100 text-blue-800",
         Confirmed: "bg-amber-100 text-amber-800",
@@ -58,7 +57,7 @@ export default function AdminOrders() {
     };
 
     if (loading) return <Loading />;
-
+    
     return (
         <>
             <div className="bg-white rounded-2xl shadow-sm border border-app-border overflow-hidden">
@@ -76,13 +75,13 @@ export default function AdminOrders() {
                                 <th className="px-6 py-4">Status</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-app-border">
-                            {orders.length === 0 ? (
+                        <tbody className="divide-y divide-[#E5E7EB]">
+                            {orders?.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-8 text-center text-zinc-500">No orders found.</td>
                                 </tr>
                             ) : (
-                                orders.map((order) => (
+                                orders?.map((order) => (
                                     <tr key={order._id} className="hover:bg-zinc-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <p className="font-semibold text-zinc-900">#{order._id.slice(-6)}</p>

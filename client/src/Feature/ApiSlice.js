@@ -134,10 +134,26 @@ export const ApiSlice=createApi({
     mathod:'GET'
     }),
     transformResponse:(response)=>response.result.orders||response
+    }),
+    getAdminOrders:builder.query({
+    query:()=>({
+    url:'/getallorder',
+    method:'GET'
+    }),
+    transformResponse:(response)=>response.orders||response,
+    providesTags:['orders']
+    }),
+    updateAdminOrderStatus:builder.mutation({
+     query:({id,body})=>({
+     url:`/updateorder/${id}`,
+     method:'PUT',
+     body:{status:body}
+     }),
+     invalidatesTags:['orders']
     })
     
    })
 })
 export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation,useGetAllProductQuery,useGetFlashDealsQuery,
-    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation,useCreateOrderMutation,useGetOrderDatailsByIdQuery,useGetUserAllOrdersQuery
+    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation,useCreateOrderMutation,useGetOrderDatailsByIdQuery,useGetUserAllOrdersQuery,useGetAdminOrdersQuery,useUpdateAdminOrderStatusMutation
 } = ApiSlice;

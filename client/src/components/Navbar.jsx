@@ -110,7 +110,6 @@ navigate('/login')
           {user && <Link to="/orders" className='dropdown-link'><PackageIcon size={16} />My Orders</Link>}
           {user && <Link to="/addresses" className='dropdown-link'><MapPinIcon size={16} />Addresses</Link>}
           <Link to="/products" className='dropdown-link md:hidden'><ArrowUpRightIcon size={16} />Products</Link>
-          <Link to="/deals" className='dropdown-link md:hidden'><MapPinIcon size={16} />Deals</Link>
            <Link to="/deals" className='dropdown-link md:hidden'><ArrowUpRightIcon size={16} />Deals</Link>
           {user?.isAdmin && (
             <Link to="/admin/products" className='dropdown-link'>
