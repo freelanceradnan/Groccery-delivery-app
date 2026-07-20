@@ -6,11 +6,17 @@ import { dummyAddressData } from '../assets/assets';
 import CheckoutAddress from '../components/CheckoutAddress';
 import CheckoutPayment from '../components/CheckoutPayment';
 import CheckoutReview from '../components/CheckoutReview';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useCreateOrderMutation, useGetUsersAddressQuery } from '../Feature/ApiSlice';
+import { toast } from 'react-hot-toast';
+import { clearCart } from '../Feature/CartSlice';
 const Checkout = () => {
+    const {data:addresses=[]}=useGetUsersAddressQuery()
+    const dispatch=useDispatch()
+    const [order]=useCreateOrderMutation()
     const navigate = useNavigate();
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
-    const { items, cartTotal } = useContext(CartContext);
+    const items=useSelector(state=>state.cart)
     
     const [step, setStep] = useState("address");
     const [loading, setLoading] = useState(false);
@@ -28,7 +34,7 @@ const Checkout = () => {
         lat: 0,
         lng: 0
     });
-
+    const cartTotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
     const deliveryFee = cartTotal > 20 ? 0 : 1.99;
     const tax = cartTotal * 0.08;
     const total = cartTotal + deliveryFee + tax;
@@ -39,32 +45,38 @@ const Checkout = () => {
         { Key: "review", label: "Review", icon: CheckIcon }
     ];
 
-    const handlePlaceOrder = async () => {
+    const handlePlaceOrder = async (e) => {
+        e.preventDefault()
         setLoading(true);
-        navigate('/orders');
+    try {
+      const orderData={
+    items:items.map((item)=>({
+        product:item.product._id,
+        quantity:item.quantity
+    })),
+    shippingAddress:address,
+    paymentMethod
+    }
+    const response=await order(orderData).unwrap()
+  
+    if(response.success===true){
+        toast.success('Order Placed SuccessFully!')
+        setTimeout(() => {
+        dispatch(clearCart())
+        navigate(`/orders/${response.order._id}`)
+        
+        }, 1000);
+    }
+    else{
+        toast.error('Failed to Proccess Order!Try Next Time!')
+    }
+    setLoading(false)
+    } catch (error) {
+        
+    }
+    
     };
 
-    useEffect(() => {
-        const addressesArray = dummyAddressData?.addresses || dummyAddressData;
-        if (Array.isArray(addressesArray) && addressesArray.length > 0) {
-            
-            const defaultAddr = addressesArray.find((a) => a.isDefault) || addressesArray[0];
-            
-            if (defaultAddr) {
-                setAddress({
-                    id: defaultAddr._id || defaultAddr.id || "addr_1",
-                    label: defaultAddr.label || "Home",
-                    address: defaultAddr.address || "",
-                    city: defaultAddr.city || "",
-                    state: defaultAddr.state || "",
-                    zip: defaultAddr.zip || "",
-                    isDefault: !!defaultAddr.isDefault,
-                    lat: defaultAddr.lat || 0,
-                    lng: defaultAddr.lng || 0
-                });
-            }
-        }
-    }, []); 
 
     if (items.length === 0) {
         return (
@@ -113,7 +125,7 @@ const Checkout = () => {
 
                 <div className="grid md:grid-cols-3 gap-6">
                     <div className="md:col-span-2">
-                        {step === 'address' && <CheckoutAddress address={address} setAddress={setAddress} setStep={setStep} user={dummyAddressData} />}
+                        {step === 'address' && <CheckoutAddress address={address} setAddress={setAddress} setStep={setStep} user={addresses} />}
                         {step === 'payment' && <CheckoutPayment paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} setStep={setStep} />}
                         {step === 'review' && <CheckoutReview address={address} items={items} handlePlaceOrder={handlePlaceOrder} loading={loading} total={total} />}
                     </div>

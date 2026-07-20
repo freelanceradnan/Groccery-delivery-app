@@ -2,7 +2,7 @@ import { CheckIcon, TruckIcon } from "lucide-react";
 
 export default function CheckoutReview({ address, items, handlePlaceOrder, loading, total }) {
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
-console.log(address)
+
     return (
         <div className="bg-white rounded-2xl p-6 animate-fade-in">
             <h2 className="text-lg font-semibold text-app-green mb-5 flex items-center gap-2">

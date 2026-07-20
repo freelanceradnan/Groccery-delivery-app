@@ -1,4 +1,4 @@
-import { Product, Order } from '../Models/DefaultModel.js'; 
+import { Product, Order, User } from '../Models/DefaultModel.js'; 
 //create order
 export const createMyOrder = async (items, shippingAddress, paymentMethod, userid) => {
   try {
@@ -11,7 +11,6 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       productMap[p._id.toString()] = p; 
     });
 
-  
     for (const item of items) {
       const product = productMap[item.product];
       if (!product || (product.stock ?? 0) < item.quantity) {
@@ -19,7 +18,6 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       }
     }
 
-   
     const orderItems = items.map((item) => {
       const dbProduct = productMap[item.product];
       if (!dbProduct) throw new Error(`Product ${item.product} not found`);
@@ -31,13 +29,11 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       };
     });
 
-   
     const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = subtotal > 20 ? 0 : 1.99;
     const tax = Math.round(subtotal * 0.08 * 100) / 100;
     const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
 
-  
     const newOrder = {
       user: userid, 
       items: orderItems,
@@ -55,15 +51,19 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
         }
       ]
     };
-    
 
+  
     const order = await Order.create(newOrder);
-    
-    if (paymentMethod === "card") {
-     //paylogic
-    }
 
    
+    await User.findByIdAndUpdate(userid, {
+      $push: { orders: order._id }
+    });
+    
+    if (paymentMethod === "card") {
+      //
+    }
+
     for (const item of orderItems) {
       await Product.findByIdAndUpdate(
         item.product,
@@ -71,7 +71,6 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       );
     }
 
-    
     return { success: true, order };
 
   } catch (error) {

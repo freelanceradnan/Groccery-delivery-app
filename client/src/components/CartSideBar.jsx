@@ -37,9 +37,9 @@ const CartSideBar = () => {
     }
   }
   //remove cart open 
-  if(cart.length===0){
-    setIsCartOpen(false)
-  }
+  // if(cart.length===0){
+  //   setIsCartOpen(false)
+  // }
   return (
     <>
       

@@ -26,7 +26,7 @@ const baseQueryWithReauth=async(args,api,extraOptions)=>{
 export const ApiSlice=createApi({
    reducerPath:'api',
    baseQuery:baseQueryWithReauth,
-   tagTypes:['users','address'],
+   tagTypes:['users','address','orders'],
    endpoints:(builder)=>({
     registerUser:builder.mutation({
         query:(userData)=>({
@@ -112,10 +112,17 @@ export const ApiSlice=createApi({
     }),
   invalidatesTags:['address']
     }),
-    
+    createOrder:builder.mutation({
+    query:(data)=>({
+    url:'/createorder',
+    method:'POST',
+    body:data
+    }),
+    invalidatesTags:['orders']
+    })
     
    })
 })
 export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation,useGetAllProductQuery,useGetFlashDealsQuery,
-    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation
+    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation,useCreateOrderMutation
 } = ApiSlice;

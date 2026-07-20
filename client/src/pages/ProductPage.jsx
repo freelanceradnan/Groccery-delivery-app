@@ -60,7 +60,7 @@ const ProductPage = () => {
   const inCart = !!cartItem;
   const currentQuantity = inCart ? cartItem.quantity : localQuantity;
   const categoryLabel = product?.category?.replace(/-/g, " ") || "";
-
+  
   // Handlers
 const handleAddToCart = (e) => {
   e?.stopPropagation();
