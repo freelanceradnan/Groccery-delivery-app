@@ -43,10 +43,10 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       deliveryFee,
       tax,
       total,
-      status: "Pending", 
+      status: "Placed", 
       statusHistory: [
         { 
-          status: "Pending", 
+          status: "Placed", 
           timestamp: new Date() 
         }
       ]
@@ -80,6 +80,7 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
 };
 //get single order
 export const getMyOrders=async(status,userid)=>{
+   
     try {
         const where = {
       user: userid 
@@ -115,6 +116,7 @@ export const getMyOrder=async(id,userid)=>{
       _id: id,           
       user: userid 
     })
+   
     .populate('items.product') 
     .populate('deliveryPartner', 'name phone avatar vehicleType'); 
 

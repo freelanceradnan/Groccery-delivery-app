@@ -15,89 +15,51 @@ function MapUpdater({ center }) {
   return null;
 }
 
-export default function LiveMap({ order, liveLocation }) {
-  // Custom delivery truck icon
-  const truckIcon = new L.Icon({
-    iconUrl: iconsForLeafpad.truck,
+export default function LiveMap({ order }) {
+  const currentOrder = Array.isArray(order) ? order[0] : order;
+
+  // Shipping address নিরাপদভাবে বের করা
+  const shipping = Array.isArray(currentOrder?.shippingAddress)
+    ? currentOrder?.shippingAddress[0]
+    : currentOrder?.shippingAddress;
+
+  // 🏠 Home Icon (শুধু আপনার বাসা / ডেলিভারি অ্যাড্রেসের জন্য)
+  const homeIcon = new L.Icon({
+    iconUrl: iconsForLeafpad.home || iconsForLeafpad.destination,
     iconSize: [36, 36],
     iconAnchor: [18, 36],
     popupAnchor: [0, -36],
   });
 
-  // Destination pin icon
-  const destinationIcon = new L.Icon({
-    iconUrl: iconsForLeafpad.destination,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
-
-  const isDeliveredOrCancelled =
-    order?.status === "Delivered" || order?.status === "Cancelled";
-
-  if (isDeliveredOrCancelled) return null;
-
-  const hasLiveLocation = Boolean(liveLocation?.lat && liveLocation?.lng);
-  const hasShippingCoordinates = Boolean(
-    order?.shippingAddress?.lat && order?.shippingAddress?.lng
-  );
+  const homeLat = Number(shipping?.lat);
+  const homeLng = Number(shipping?.lng);
+  const hasHomeCoordinates = Boolean(!isNaN(homeLat) && !isNaN(homeLng) && homeLat !== 0 && homeLng !== 0);
 
   return (
     <div className="rounded-2xl overflow-hidden border border-black/20 h-[280px]">
-      {hasLiveLocation ? (
+      {hasHomeCoordinates ? (
         <MapContainer
-          center={[liveLocation.lat, liveLocation.lng]}
+          center={[homeLat, homeLng]}
           zoom={15}
           className="h-full w-full"
           zoomControl={false}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          
-          <Marker
-            position={[liveLocation.lat, liveLocation.lng]}
-            icon={truckIcon}
-          >
-            <Popup>Delivery Partner</Popup>
+
+          {/* শুধু Home Icon Marker দেখাবে */}
+          <Marker position={[homeLat, homeLng]} icon={homeIcon}>
+            <Popup>My Home Address</Popup>
           </Marker>
 
-          {hasShippingCoordinates && (
-            <Marker
-              position={[
-                order.shippingAddress.lat,
-                order.shippingAddress.lng,
-              ]}
-              icon={destinationIcon}
-            >
-              <Popup>Delivery Address</Popup>
-            </Marker>
-          )}
-
-          <MapUpdater center={[liveLocation.lat, liveLocation.lng]} />
-        </MapContainer>
-      ) : hasShippingCoordinates ? (
-        <MapContainer
-          center={[order.shippingAddress.lat, order.shippingAddress.lng]}
-          zoom={15}
-          className="h-full w-full"
-          zoomControl={false}
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <Marker
-            position={[
-              order.shippingAddress.lat,
-              order.shippingAddress.lng,
-            ]}
-            icon={destinationIcon}
-          >
-            <Popup>Delivery Address</Popup>
-          </Marker>
+          <MapUpdater center={[homeLat, homeLng]} />
         </MapContainer>
       ) : (
+        /* কোঅর্ডিনেট না থাকলে এই ফিল্টারটি দেখাবে */
         <div className="h-full bg-app-green/5 flex items-center justify-center">
           <div className="text-center">
             <MapPinIcon className="size-8 text-app-green/40 mx-auto mb-2" />
             <p className="text-sm text-app-green/50 font-medium">
-              Waiting for delivery partner location...
+              Waiting for home address location...
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { ClockIcon, CheckIcon, TruckIcon, PackageIcon } from "lucide-react";
 
 export default function OrderTimeLine({ order }) {
+  console.log(order)
   const allStatuses = [
     "Placed",
     "Confirmed",
