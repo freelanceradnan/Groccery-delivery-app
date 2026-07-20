@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { useContext } from "react";
 //get localstorage
 const getInitialCart = () => {
   try {
@@ -14,14 +15,22 @@ export const CartSlice = createSlice({
   initialState: getInitialCart(),
   reducers: {
     addToCart: (state, action) => {
-      const product = state.find((c) => c.id === action.payload.id);
-      if (product) {
-        product.quantity++;
-      } else {
-        state.push({ ...action.payload, quantity: 1 });
-      }
-      localStorage.setItem("cart_items", JSON.stringify(state));
-    },
+  const { id, product, quantity } = action.payload;
+  const qtyToAdd = quantity || 1; 
+
+  const existingProduct = state.find((c) => c.id === id);
+
+  if (existingProduct) {
+    existingProduct.quantity += qtyToAdd;
+  } else {
+    state.push({
+      ...action.payload,
+      quantity: qtyToAdd,
+    });
+  }
+
+  localStorage.setItem("cart_items", JSON.stringify(state));
+},
 
     removeItemFromCart: (state, action) => {
       const updatedState = state.filter((item) => item.id !== action.payload);

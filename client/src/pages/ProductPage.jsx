@@ -5,7 +5,6 @@ import { CartContext } from "../contexts/CartContext";
 import Loading from "../components/Loading";
 import {
   ArrowLeftIcon,
-  ArrowRight,
   ArrowRightIcon,
   HomeIcon,
   LeafIcon,
@@ -16,59 +15,98 @@ import {
 import DummyReviewsSection from "../components/DummyReviewsSection";
 import ProductCart from "../components/ProductCart";
 import { useGetAllProductQuery } from "../Feature/ApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  modifyQuantityAnItem,
+  removeItemFromCart,
+} from "../Feature/CartSlice";
 
 const ProductPage = () => {
-  const {data:products}=useGetAllProductQuery()
+  const { data: products } = useGetAllProductQuery();
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
   const navigate = useNavigate();
   const { id } = useParams();
-  const { items, addToCart, removeFromCart, updateQuantity } = useContext(CartContext);
+  
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   const [product, setProduct] = useState(null);
   const [relatedProduct, setRelatedProduct] = useState([]);
   const [localQuantity, setLocalQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const { setIsCartOpen } = useContext(CartContext);
 
   useEffect(() => {
-  setLocalQuantity(1);
-  window.scrollTo(0, 0);
-  const foundProduct = products?.find((p) => p._id === id);
+    setLocalQuantity(1);
+    window.scrollTo(0, 0);
+    const foundProduct = products?.find((p) => p._id === id);
 
-  if (foundProduct) {
-    setProduct(foundProduct);
-    setRelatedProduct(products?.filter((p) => p._id !== id));
-  } else {
-    setProduct(null);
-  }
+    if (foundProduct) {
+      setProduct(foundProduct);
+      setRelatedProduct(products?.filter((p) => p._id !== id));
+    } else {
+      setProduct(null);
+    }
 
-  setLoading(false);
-}, [id,products]);
+    setLoading(false);
+  }, [id, products]);
 
   if (loading) return <Loading />;
   if (!product) return null;
 
-  const cartItem = items.find((item) => item.product._id === product._id);
+  // Cart derivations
+  const cartItem = cart.find((item) => item.id === product._id);
   const inCart = !!cartItem;
-  const displayQuantity = inCart ? cartItem.quantity : localQuantity;
+  const currentQuantity = inCart ? cartItem.quantity : localQuantity;
   const categoryLabel = product?.category?.replace(/-/g, " ") || "";
 
-  const handleMinus = () => {
+  // Handlers
+const handleAddToCart = (e) => {
+  e?.stopPropagation();
+
+  if (!inCart) {
+    dispatch(
+      addToCart({
+        id: product._id,
+        product,
+        quantity: localQuantity, 
+      })
+    );
+
+    setIsCartOpen(true);
+  }
+};
+
+  const handleIncreaseQuantity = () => {
     if (inCart) {
-      if (cartItem.quantity > 1) {
-        updateQuantity(product._id, cartItem.quantity - 1);
-      } else {
-        removeFromCart(product._id);
-      }
+      dispatch(
+        modifyQuantityAnItem({
+          id: product._id,
+          quantity: currentQuantity + 1,
+        })
+      );
     } else {
-      setLocalQuantity(Math.max(1, localQuantity - 1));
+      setLocalQuantity((prev) => prev + 1);
     }
   };
 
-  const handlePlus = () => {
+  const handleDecreaseQuantity = () => {
     if (inCart) {
-      updateQuantity(product._id, cartItem.quantity + 1);
+      const nextQty = currentQuantity - 1;
+      if (nextQty <= 0) {
+        dispatch(removeItemFromCart(product._id));
+        setIsCartOpen(false);
+      } else {
+        dispatch(
+          modifyQuantityAnItem({
+            id: product._id,
+            quantity: nextQty,
+          })
+        );
+      }
     } else {
-      setLocalQuantity(localQuantity + 1);
+      setLocalQuantity((prev) => Math.max(1, prev - 1));
     }
   };
 
@@ -199,33 +237,31 @@ const ProductPage = () => {
                 <div className="flex items-center border border-[#e5e7eb] rounded-xl overflow-hidden">
                   <button
                     className="p-3 hover:bg-[#f2efef] transition-colors"
-                    onClick={handleMinus}
+                    onClick={handleDecreaseQuantity}
                   >
                     <MinusIcon className="w-4 h-4" />
                   </button>
                   <span className="px-5 text-sm font-semibold min-w-[40px] text-center">
-                    {displayQuantity}
+                    {currentQuantity}
                   </span>
                   <button
                     className="p-3 hover:bg-[#f2efef] transition-colors"
-                    onClick={handlePlus}
+                    onClick={handleIncreaseQuantity}
                   >
                     <PlusIcon className="w-4 h-4" />
                   </button>
                 </div>
 
                 <button
-                  disabled={product.stock === 0}
-                  onClick={() => {
-                    if (!inCart) addToCart(product, localQuantity);
-                  }}
+                  disabled={product.stock === 0 || inCart}
+                  onClick={handleAddToCart}
                   className={`flex-1 py-3 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] ${
                     inCart
                       ? "bg-[#fdfaf9] text-[#6c7381] border-[#6c7381] border"
                       : "bg-amber-400 text-white hover:bg-amber-500 border-[#94908f]"
                   }`}
                 >
-                  {inCart ? "Added To Cart" : "Add To cart"}
+                  {inCart ? "Added To Cart" : "Add To Cart"}
                 </button>
               </div>
             </div>
@@ -234,21 +270,31 @@ const ProductPage = () => {
 
         {/* Customer Reviews Section */}
         {product?.reviewCount > 0 && <DummyReviewsSection product={product} />}
-        {/* relatedproduct */}
-        {relatedProduct.length>0 && (
+
+        {/* Related Products Section */}
+        {relatedProduct.length > 0 && (
           <section className="mt-12 mb-44">
-         <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-semibold text-green-500">Related Products</h2>
-          <p className="text-sm text-light mt-1">More from {categoryLabel}</p>
-        </div>
-        <Link className="text-sm font-semibold text-orange-500 hover:text-orange-300 flex items-center gap-1 transition-colors" to={`/products?category=${product.category}`}>View All <ArrowRightIcon className="size-4"/></Link>
-         </div>
-         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 xl:gap-8">
-         {relatedProduct.slice(0, 5).map((rp) => (
-  <ProductCart key={rp._id} product={rp} /> 
-))}
-         </div>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-green-500">
+                  Related Products
+                </h2>
+                <p className="text-sm text-light mt-1">
+                  More from {categoryLabel}
+                </p>
+              </div>
+              <Link
+                className="text-sm font-semibold text-orange-500 hover:text-orange-300 flex items-center gap-1 transition-colors"
+                to={`/products?category=${product.category}`}
+              >
+                View All <ArrowRightIcon className="size-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 xl:gap-8">
+              {relatedProduct.slice(0, 5).map((rp) => (
+                <ProductCart key={rp._id} product={rp} />
+              ))}
+            </div>
           </section>
         )}
       </div>

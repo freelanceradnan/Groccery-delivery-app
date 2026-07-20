@@ -8,8 +8,19 @@ import { addToCart } from '../Feature/CartSlice';
 const ProductCart = ({product}) => {
     const dispatch=useDispatch()
     const state=useSelector(state=>state.cart)
+    const {isCartOpen,
+    setIsCartOpen}=useContext(CartContext)
     const currency=import.meta.env.VITE_CURRENCY_SYMBOL||"$"
     const navigate=useNavigate()
+    const AddToCart=(e)=>{
+      
+        e.stopPropagation();
+        dispatch(addToCart({
+          id:product._id,
+          product
+        }));
+      setIsCartOpen(true)
+    }
     return (
         <div 
   className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-md transition-all duration-300 group animate-fade-in cursor-pointer flex flex-col justify-between" 
@@ -78,13 +89,7 @@ const ProductCart = ({product}) => {
 
     {/* Add To Cart Button */}
     <button 
-      onClick={(e) => {
-        e.stopPropagation();
-        dispatch(addToCart({
-          id:product._id,
-          product
-        }));
-      }} 
+      onClick={AddToCart} 
       className="size-7 sm:size-8 rounded-full bg-orange-500 text-white flex items-center justify-center shrink-0 hover:bg-orange-600 transition-all active:scale-90 shadow-sm"
       title="Add to cart"
     >

@@ -21,6 +21,25 @@ const CartSideBar = () => {
   const cartTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const deliveryFee = cartTotal > 20 ? 0 : 1.99;
   const grandTotal = cartTotal + deliveryFee;
+  //modify quantity
+  const QuantityPlus=(itemid,quantity)=>{
+    
+      dispatch(modifyQuantityAnItem({id:itemid,quantity:quantity}))
+     
+  }
+    //modify quantity
+  const QuantityMinus=(itemid,quantity)=>{
+     if(quantity<1){
+    return dispatch(removeItemFromCart(itemid))
+    setIsCartOpen(false)
+    }else{
+      dispatch(modifyQuantityAnItem({id:itemid,quantity:quantity}))
+    }
+  }
+  //remove cart open 
+  if(cart.length===0){
+    setIsCartOpen(false)
+  }
   return (
     <>
       
@@ -81,14 +100,14 @@ const CartSideBar = () => {
                   <div className="flex items-center justify-between mt-1">
                     <div className="flex items-center bg-slate-100 border border-slate-200/60 rounded-lg p-0.5">
                       <button 
-                        onClick={() => dispatch(modifyQuantityAnItem({id:item.id,quantity:item.quantity- 1}))}
+                        onClick={()=>QuantityMinus(item.id,item.quantity-1)}
                         className="p-1 rounded-md hover:bg-white text-slate-600 hover:text-amber-600 transition-all active:scale-90"
                       >
                         <MinusIcon className="size-3.5"/>
                       </button>
                       <span className="w-8 text-center text-xs font-bold text-slate-700">{item.quantity}</span>
                       <button 
-                        onClick={() => dispatch(modifyQuantityAnItem({id:item.id,quantity:item.quantity+1}))}
+                         onClick={()=>QuantityPlus(item.id,item.quantity+1)}
                         className="p-1 rounded-md hover:bg-white text-slate-600 hover:text-amber-600 transition-all active:scale-90"
                       >
                         <PlusIcon className="size-3.5"/>
