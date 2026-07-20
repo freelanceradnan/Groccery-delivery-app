@@ -44,13 +44,14 @@ const Checkout = () => {
         { Key: "payment", label: "Payment", icon: CreditCardIcon },
         { Key: "review", label: "Review", icon: CheckIcon }
     ];
-
+   
     const handlePlaceOrder = async (e) => {
         e.preventDefault()
         setLoading(true);
     try {
       const orderData={
     items:items.map((item)=>({
+        image:item.product.image,
         product:item.product._id,
         quantity:item.quantity
     })),

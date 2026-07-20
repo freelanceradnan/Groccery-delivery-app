@@ -18,12 +18,10 @@ function MapUpdater({ center }) {
 export default function LiveMap({ order }) {
   const currentOrder = Array.isArray(order) ? order[0] : order;
 
-  // Shipping address নিরাপদভাবে বের করা
   const shipping = Array.isArray(currentOrder?.shippingAddress)
     ? currentOrder?.shippingAddress[0]
     : currentOrder?.shippingAddress;
 
-  // 🏠 Home Icon (শুধু আপনার বাসা / ডেলিভারি অ্যাড্রেসের জন্য)
   const homeIcon = new L.Icon({
     iconUrl: iconsForLeafpad.home || iconsForLeafpad.destination,
     iconSize: [36, 36],
@@ -46,7 +44,6 @@ export default function LiveMap({ order }) {
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* শুধু Home Icon Marker দেখাবে */}
           <Marker position={[homeLat, homeLng]} icon={homeIcon}>
             <Popup>My Home Address</Popup>
           </Marker>
@@ -54,7 +51,6 @@ export default function LiveMap({ order }) {
           <MapUpdater center={[homeLat, homeLng]} />
         </MapContainer>
       ) : (
-        /* কোঅর্ডিনেট না থাকলে এই ফিল্টারটি দেখাবে */
         <div className="h-full bg-app-green/5 flex items-center justify-center">
           <div className="text-center">
             <MapPinIcon className="size-8 text-app-green/40 mx-auto mb-2" />

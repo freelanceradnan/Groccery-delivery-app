@@ -127,10 +127,17 @@ export const ApiSlice=createApi({
     }),
     transformResponse:(response)=>response.result.orders||response,
     providesTags: ['orders'],
+    }),
+    getUserAllOrders:builder.query({
+    query:()=>({
+    url:'/getuserorders',
+    mathod:'GET'
+    }),
+    transformResponse:(response)=>response.result.orders||response
     })
     
    })
 })
 export const { useRegisterUserMutation,useLoginUserMutation,useEmailVerifyMutation,useOtpVerifyMutation,useChangePasswordMutation,useGetAllProductQuery,useGetFlashDealsQuery,
-    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation,useCreateOrderMutation,useGetOrderDatailsByIdQuery
+    useAddAddressMutation,useUpdateAddressMutation,useGetUsersAddressQuery,useDeleteUserAddressMutation,useCreateOrderMutation,useGetOrderDatailsByIdQuery,useGetUserAllOrdersQuery
 } = ApiSlice;

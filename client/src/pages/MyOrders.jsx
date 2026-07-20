@@ -4,23 +4,28 @@ import { CartContext } from '../contexts/CartContext';
 import { dummyDashboardOrdersData, statusColors } from '../assets/assets';
 import Loading from '../components/Loading';
 import { Calendar, ChevronRightIcon, PackageIcon } from 'lucide-react';
+import { useGetAllProductQuery, useGetUserAllOrdersQuery } from '../Feature/ApiSlice';
 
 const MyOrders = () => {
+    const {data:AllOrders=[]}=useGetUserAllOrdersQuery()
+    const {data:allProducts}=useGetAllProductQuery()
+    
     // Fixed typo: VITE_CURRENCY_SYMBOL
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [products,setProducts]=useState([])
     const [activeTab, setActiveTab] = useState('all');
     const [searchParams, setSearchParams] = useSearchParams();
     const tabs = ["all", "Placed", "Out for Delivery", "Delivered"];
     const { clearCart } = useContext(CartContext);
-
+    
     const fetchOrders = async () => {
-        let filteredOrders = dummyDashboardOrdersData;
+        let filteredOrders = AllOrders;
         
         // Filter orders based on active tab
         if (activeTab !== 'all') {
-            filteredOrders = dummyDashboardOrdersData.filter(
+            filteredOrders = AllOrders.filter(
                 (order) => order.status === activeTab
             );
         }
@@ -28,7 +33,7 @@ const MyOrders = () => {
         setOrders(filteredOrders);
         setLoading(false);
     };
-    console.log(orders)
+    // console.log(orders)
     useEffect(() => {
         if (searchParams.get("clearCart")) {
             clearCart("");
@@ -39,7 +44,13 @@ const MyOrders = () => {
         } else {
             fetchOrders();
         }
-    }, [activeTab]);
+    }, [activeTab,AllOrders]);
+    useEffect(()=>{
+   if(allProducts){
+setProducts(allProducts)
+   }
+    },[allProducts])
+
 
     return (
         <div className='min-h-screen bg-[#faf7f2] mb-20'>
@@ -76,6 +87,7 @@ const MyOrders = () => {
                 ) : (
                     <div className='space-y-4'>
                         {orders.map((order) => (
+                            
                             <Link 
                                 key={order._id || order.id} 
                                 to={`/orders/${order._id}`} 
@@ -111,14 +123,36 @@ const MyOrders = () => {
 
                                 {/* items-image */}
                                 <div className='flex items-center gap-2 mb-3'>
-                                    {order.items.slice(0, 4).map((item, index) => (
-                                        <img 
-                                            key={item._id || item.id || `${order._id}-${index}`} 
-                                            alt={item.name} 
-                                            src={item.image} 
+                                    {
+                                    
+                                     <div className="space-y-3">
+                {order?.items?.map((item, i) => 
+                {
+                   const filtered=products.find(c=>c._id===item.product)
+                  
+                   return (
+                         <img 
+                                            key={filtered?._id || filtered?.id || `${filtered?._id}-${index}`} 
+                                            alt={filtered?.name} 
+                                            src={filtered?.image} 
                                             className='size-12 sm:size-16 rounded-lg object-cover border border-black/20'
                                         />
-                                    ))}
+                 
+                )
+                }
+                
+                
+               
+
+
+                )}
+              </div>
+                                    // order.items.slice(0, 4).map((item, index) => (
+                                   
+                                    // ))
+                                    
+                                    
+                                    }
                                     {order.items.length > 4 && (
                                         <div className='size-12 sm:size-16 rounded-lg bg-amber-200 flex items-center justify-center text-xs font-semibold text-light'>
                                             +{order.items.length - 4}
