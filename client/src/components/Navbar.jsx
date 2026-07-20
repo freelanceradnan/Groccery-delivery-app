@@ -6,15 +6,17 @@ import { ArrowUpRightIcon, ChevronDownIcon, LogOut, MapPinIcon, MenuIcon, Packag
 import { CartContext } from '../contexts/CartContext';
 import toast from 'react-hot-toast';
 import { ApiSlice } from '../Feature/ApiSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 const Navbar = () => {
+    const cart=useSelector(state=>state.cart)
+     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const dispatch=useDispatch()
   const navigate=useNavigate()
   //checkout user login or not
     const rawUser = localStorage.getItem('auth_user');
    const user = rawUser ? JSON.parse(rawUser) : null;
 
-    const { cartCount, setIsCartOpen } = useContext(CartContext)
+    const { setIsCartOpen } = useContext(CartContext)
    const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery,setSearchQuery]=useState("")
   //search items set query

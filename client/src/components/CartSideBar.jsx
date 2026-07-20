@@ -2,24 +2,25 @@ import React, { useContext } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowRightIcon, MinusIcon, PlusIcon, ShoppingBagIcon, Trash2Icon, XIcon } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { modifyQuantityAnItem, removeItemFromCart } from "../Feature/CartSlice";
 
 const CartSideBar = () => {
   const navigate = useNavigate();
+  const cart=useSelector(state=>state.cart)
+  const dispatch=useDispatch()
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
   const {
-    items,
-    removeFromCart,
-    updateQuantity,
-    cartTotal,
     isCartOpen,
     setIsCartOpen,
   } = useContext(CartContext);
 
   if (!isCartOpen) return null;
-  
+
+
+  const cartTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const deliveryFee = cartTotal > 20 ? 0 : 1.99;
   const grandTotal = cartTotal + deliveryFee;
-
   return (
     <>
       
@@ -37,7 +38,7 @@ const CartSideBar = () => {
             <ShoppingBagIcon className="size-5 text-amber-600"/>
             <h2 className="text-lg font-bold text-slate-800">Your Cart</h2>
             <span className="flex items-center justify-center text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
-              {items.length} {items.length <= 1 ? "item" : "items"}
+              {cart.length} {cart.length <= 1 ? "item" : "items"}
             </span>
           </div>
           <button 
@@ -50,7 +51,7 @@ const CartSideBar = () => {
 
     
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {items.length === 0 ? (
+          {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
               <div className="p-4 bg-amber-50 rounded-full mb-3">
                 <ShoppingBagIcon className="size-12 text-amber-500/80"/>
@@ -59,9 +60,9 @@ const CartSideBar = () => {
               <p className="text-sm text-slate-400 max-w-xs">Looks like you haven't added anything to your cart yet.</p>
             </div>
           ) : (
-            items.map((item) => (
-              <div key={item.product._id} className="flex gap-4 bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
-                
+            cart.map((item) => (
+              
+              <div key={item.id} className="flex gap-4 bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
                 <img 
                   src={item.product.image} 
                   alt={item.product.name} 
@@ -72,7 +73,7 @@ const CartSideBar = () => {
                   <div>
                     <h4 className="text-sm font-bold text-slate-800 truncate">{item.product.name}</h4>
                     <p className="text-xs text-slate-400 font-medium">
-                      {currency}{item.product.price.toFixed(2)}/{item.product.unit || "pcs"}
+                      {currency}{item?.product.price.toFixed(2)}/{item?.product.unit || "pcs"}
                     </p>
                   </div>
 
@@ -80,14 +81,14 @@ const CartSideBar = () => {
                   <div className="flex items-center justify-between mt-1">
                     <div className="flex items-center bg-slate-100 border border-slate-200/60 rounded-lg p-0.5">
                       <button 
-                        onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
+                        onClick={() => dispatch(modifyQuantityAnItem({id:item.id,quantity:item.quantity- 1}))}
                         className="p-1 rounded-md hover:bg-white text-slate-600 hover:text-amber-600 transition-all active:scale-90"
                       >
                         <MinusIcon className="size-3.5"/>
                       </button>
                       <span className="w-8 text-center text-xs font-bold text-slate-700">{item.quantity}</span>
                       <button 
-                        onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
+                        onClick={() => dispatch(modifyQuantityAnItem({id:item.id,quantity:item.quantity+1}))}
                         className="p-1 rounded-md hover:bg-white text-slate-600 hover:text-amber-600 transition-all active:scale-90"
                       >
                         <PlusIcon className="size-3.5"/>
@@ -100,7 +101,7 @@ const CartSideBar = () => {
                       </span>
                       <button 
                         className="p-1 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors" 
-                        onClick={() => removeFromCart(item.product._id)}
+                        onClick={() => dispatch(removeItemFromCart(item.id))}
                       >
                         <Trash2Icon className="size-4"/>
                       </button>
@@ -111,7 +112,7 @@ const CartSideBar = () => {
             ))
           )}
         </div>
-        {items.length > 0 && (
+        {cart.length > 0 && (
           <div className="bg-white border-t border-slate-100 p-5 space-y-4 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-slate-500">

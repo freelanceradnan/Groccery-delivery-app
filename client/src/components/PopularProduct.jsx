@@ -13,7 +13,7 @@ const PopularProduct = () => {
  
     useEffect(()=>{
     if(allProducts){
-        setProduct(allProducts.products)
+        setProduct(allProducts)
     }
     },[allProducts])
     if(isLoading) return <Loading/>
