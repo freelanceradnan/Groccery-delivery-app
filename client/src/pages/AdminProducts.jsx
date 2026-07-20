@@ -1,34 +1,39 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PlusIcon, EditIcon, XIcon } from "lucide-react";
-import { dummyProducts } from "../assets/assets";
 import Loading from "../components/Loading";
+import { useDeleteAdminProductMutation, useGetAllProductQuery } from "../Feature/ApiSlice";
+import toast from "react-hot-toast";
 
 
 export default function AdminProducts() {
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
-
+   const{data:allProduct}=useGetAllProductQuery()
+   const [deleteProduct]=useDeleteAdminProductMutation()
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        let timer;
-        const fetchProducts = async () => {
-            setProducts(dummyProducts);
-            timer = setTimeout(() => {
-                setLoading(false);
-            }, 1000);
-        };
-        
-        fetchProducts();
-        
-        return () => clearTimeout(timer);
-    }, []);
+        if(allProduct){
+            setLoading(true)
+            setProducts(allProduct)
+            setLoading(false)
+        }
+    }, [allProduct]);
 
     const handleMarkOutOfStock = async (id, name) => {
-        if (!window.confirm(`Are you sure you want to mark "${name}" as out of stock?`)) return;
-        console.log(id);
-        // Handle API state update or client filter state logic here
+        if (!window.confirm(`Are you sure you want to delete "${name}" Product?`)) return;
+        try {
+         const response=await deleteProduct(id).unwrap()
+         if(response.success===true){
+            toast.success('product delete success!')
+         }
+         else{
+            toast.error('failed to delete product')
+         }
+        } catch (error) {
+            toast.error('failed to delete product')
+        }
     };
 
     if (loading) return <Loading />;
@@ -52,7 +57,7 @@ export default function AdminProducts() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-app-border">
+                        <tbody className="divide-y divide-[#e5e7eb]">
                             {products.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-6 py-8 text-center text-zinc-500">No products found.</td>

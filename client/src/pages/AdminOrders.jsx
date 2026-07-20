@@ -26,9 +26,14 @@ export default function AdminOrders() {
     const handleStatusChange = async (id, newStatus) => {
         try {
             const response=await updateStatus({id:id,body:newStatus})
-            console.log(response)
+            if(response.data.success){
+            toast.success('Status update success!')
+            } 
+            else{
+            toast.error('Product updated failed!')
+            }
         } catch (error) {
-            
+            toast.error('Product updated failed!')
         }
        
     };
