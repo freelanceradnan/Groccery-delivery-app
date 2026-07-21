@@ -61,7 +61,9 @@ const OrderSchema = new mongoose.Schema({
     "Assigned",
     "Packed",
     "Out for Delivery",
-    "Delivered",], 
+    "Delivered",
+"Cancelled"
+], 
         default: 'Placed' 
     },
     statusHistory: [

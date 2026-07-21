@@ -258,7 +258,23 @@ export const ApiSlice = createApi({
     body:{status}
     }),
     invalidatesTags:['orders']
-    })
+    }),
+    completeDeliveryOrder:builder.mutation({
+    query:({id,otp})=>({
+    url:`/my-deliveries/${id}/complete`,
+    method:'PUT',
+    body:{otp}
+    }),
+    invalidatesTags:['orders']
+    }),
+    cancelDeliveryOrder:builder.mutation({
+    query:({id,reason})=>({
+    url:`/my-deliveries/${id}/cancel`,
+    method:'PUT',
+    body:{reason}
+    }),
+    invalidatesTags:['orders']
+    }),
   }),
 });
 export const {
@@ -290,5 +306,7 @@ export const {
   useGetAdminStatsQuery,
   useDeliveryLoginMutation,
   useDeliveryPartnerOrderQuery,
-  useOrderStatusDeliveryUpdateMutation
+  useOrderStatusDeliveryUpdateMutation,
+  useCompleteDeliveryOrderMutation,
+  useCancelDeliveryOrderMutation
 } = ApiSlice;

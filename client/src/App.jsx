@@ -20,6 +20,10 @@ import DeliveryLogin from "./pages/DeliveryLogin";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import DeliveryLayout from "./pages/DeliveryLayout";
 import ProtectedUser from "./components/ProtectedUser";
+import DeliveryProtected from "./components/DeliveryProtected";
+import { DeliveryPublic } from "./components/DeliveryPublic";
+import { NotFound } from "./pages/NotfoundPage";
+
 function App() {
   return (
    <Routes>
@@ -49,11 +53,16 @@ function App() {
    <Route path="delivery-partners" element={<AdminDeliveryPartners/>}/>
   </Route>
   {/* delivery-routes */}
- <Route path="/delivery/login" element={<DeliveryLogin />} />
-<Route path="/delivery" element={<DeliveryLayout />}>
-    <Route index element={<DeliveryDashboard />} />
-</Route>
+  <Route element={<DeliveryPublic />}>
+          <Route path="/delivery/login" element={<DeliveryLogin />} />
+        </Route>
+ <Route element={<DeliveryProtected />}>
+          <Route path="/delivery" element={<DeliveryLayout />}>
+            <Route index element={<DeliveryDashboard />} />
+          </Route>
+        </Route>
 <Route path="/login" element={<Login />} />
+<Route path="*" element={<NotFound/>}/>
 </Routes>
   );
 }
