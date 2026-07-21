@@ -3,21 +3,24 @@ import { Link } from "react-router-dom";
 import { PackageIcon, UsersIcon, ShoppingBagIcon, AlertTriangleIcon } from "lucide-react";
 import Loading from "../components/Loading";
 import { dummyAdminDashboardData, statusColors } from "../assets/assets";
+import { useGetAdminStatsQuery } from "../Feature/ApiSlice";
 
 export default function AdminDashboard() {
+    const {data:alladminStats}=useGetAdminStatsQuery()
+   
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
 
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setStats(dummyAdminDashboardData);
-            setLoading(false);
-        }, 1000);
-
-        return () => clearTimeout(timer); // Clean up timeout to prevent memory leaks
-    }, []);
+          if(alladminStats){
+            setLoading(true)
+            setStats(alladminStats)
+            setLoading(false)
+          }
+       
+    }, [alladminStats]);
 
     const cards = stats
         ? [
@@ -67,7 +70,7 @@ export default function AdminDashboard() {
                                 <th className="px-6 py-3">Date</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-app-border">
+                        <tbody className="divide-y divide-[#E0DDD8]">
                             {stats?.recentOrders.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-8 text-center text-zinc-500">No orders yet.</td>

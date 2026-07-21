@@ -4,8 +4,12 @@ const BaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_SERVER,
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("token");
+    const deliverytoken=localStorage.getItem('delivery_token')
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
+    }
+    if(deliverytoken){
+       headers.set("authorization", `Bearer ${deliverytoken}`);
     }
     return headers;
   },
@@ -124,11 +128,11 @@ export const ApiSlice = createApi({
       invalidatesTags: ["orders",'products'],
     }),
     getOrderDatailsById: builder.query({
-      query: () => ({
-        url: "/getuserorders",
+      query: (id) => ({
+        url: `/getuserorder/${id}`,
         method: "GET",
       }),
-      transformResponse: (response) => response.result.orders || response,
+      transformResponse: (response) => response.order || response,
       providesTags: ["orders"],
     }),
     getUserAllOrders: builder.query({
@@ -223,6 +227,37 @@ export const ApiSlice = createApi({
     body: { partnerId } 
   }),
   invalidatesTags:['orders']
+    }),
+    getAdminStats:builder.query({
+     query:()=>({
+     url:'/stats',
+     method:'GET'
+     }),
+     providesTags:['orders','products','partner','users'],
+     transformResponse:(response)=>response.data||response
+    }),
+    deliveryLogin:builder.mutation({
+      query:(data)=>({
+      url:'/login/deliverypartner',
+      method:'POST',
+      body:data
+      })
+    }),
+    deliveryPartnerOrder:builder.query({
+    query:()=>({
+    url:'/my-deliveries',
+    method:'GET'
+    }),
+    transformResponse:(response)=>response.orders||response,
+    providesTags:['orders']
+    }),
+    orderStatusDeliveryUpdate:builder.mutation({
+    query:({id,status})=>({
+    url:`/my-deliveries/${id}`,
+    method:'PUT',
+    body:{status}
+    }),
+    invalidatesTags:['orders']
     })
   }),
 });
@@ -251,5 +286,9 @@ export const {
   useGetAllDeliveryPartnerQuery,
   useCreateDeliveryPartnerMutation,
   useUpdateDeliveryPartnerStatusMutation,
-  useAssignDeliveryPartnerMutation
+  useAssignDeliveryPartnerMutation,
+  useGetAdminStatsQuery,
+  useDeliveryLoginMutation,
+  useDeliveryPartnerOrderQuery,
+  useOrderStatusDeliveryUpdateMutation
 } = ApiSlice;

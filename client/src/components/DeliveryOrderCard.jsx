@@ -3,9 +3,10 @@ import { statusColors } from '../assets/assets';
 
 
 export default function DeliveryOrderCard({ order, tab, handleUpdateStatus, setOtpModal, setCancelModal }) {
+   
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
     const user = typeof order.user === "object" ? order.user : { name: "Customer", email: "", phone: "" };
-
+// console.log(order)
     return (
         <div key={order._id} className="bg-white rounded-2xl border border-app-border overflow-hidden">
             {/* Header */}
@@ -23,8 +24,8 @@ export default function DeliveryOrderCard({ order, tab, handleUpdateStatus, setO
             <div className="px-5 py-4 space-y-3">
                 {/* Customer */}
                 <div className="flex items-center gap-2 text-sm">
-                    <div className="size-8 rounded-full bg-app-cream flex-center">
-                        <span className="text-xs font-semibold text-app-green">{user.name?.charAt(0)}</span>
+                    <div className="size-8 rounded-full bg-[#043A23] flex items-center justify-center">
+                        <span className="text-xs font-semibold text-white">{user.name?.charAt(0)}</span>
                     </div>
                     <div>
                         <p className="font-medium text-zinc-900">{user.name}</p>
@@ -35,7 +36,7 @@ export default function DeliveryOrderCard({ order, tab, handleUpdateStatus, setO
                 {/* Address */}
                 <div className="flex items-start gap-2 text-sm text-zinc-600">
                     <MapPinIcon className="size-4 text-app-green shrink-0 mt-0.5" />
-                    <p>{order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
+                    <p>{order.shippingAddress[0].address}, {order.shippingAddress[0].city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
                 </div>
 
                 {/* Items count */}
@@ -44,25 +45,46 @@ export default function DeliveryOrderCard({ order, tab, handleUpdateStatus, setO
 
             {/* Actions */}
             {tab === "active" && (
-                <div className="px-5 py-3 border-t border-app-border flex flex-wrap gap-2">
-                    {(order.status === "Assigned" || order.status === "Packed") && (
-                        <button onClick={() => handleUpdateStatus(order._id, order.status === "Assigned" ? "Packed" : "Out for Delivery")} className="px-4 py-2 text-sm font-medium bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-1.5">
-                            <TruckIcon className="w-3.5 h-3.5" />
-                            {order.status === "Assigned" ? "Mark Packed" : "Out for Delivery"}
-                        </button>
-                    )}
-                    {order.status === "Out for Delivery" && (
-                        <button onClick={() => setOtpModal(order._id)} className="px-4 py-2 text-sm font-medium bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors flex items-center gap-1.5">
-                            <CheckCircleIcon className="w-3.5 h-3.5" /> Mark Delivered
-                        </button>
-                    )}
-                    {order.status !== "Delivered" && order.status !== "Cancelled" && (
-                        <button onClick={() => setCancelModal(order._id)} className="px-4 py-2 text-sm font-medium bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors flex items-center gap-1.5">
-                            <XCircleIcon className="w-3.5 h-3.5" /> Cancel
-                        </button>
-                    )}
-                </div>
-            )}
+    <div className="px-5 py-3 border-t border-app-border flex flex-wrap gap-2">
+    
+        {["Confirmed", "Assigned", "Packed"].includes(order.status) && (
+            <button 
+                onClick={() => {
+                    const nextStatus = 
+                        order.status === "Confirmed" ? "Assigned" : 
+                        order.status === "Assigned" ? "Packed" : "Out for Delivery";
+                    handleUpdateStatus(order._id, nextStatus);
+                }} 
+                className="px-4 py-2 text-sm font-medium bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+            >
+                <TruckIcon className="w-3.5 h-3.5" />
+                {order.status === "Confirmed" && "Mark Assigned"}
+                {order.status === "Assigned" && "Mark Packed"}
+                {order.status === "Packed" && "Out for Delivery"}
+            </button>
+        )}
+
+        {/* Mark Delivered via OTP */}
+        {order.status === "Out for Delivery" && (
+            <button 
+                onClick={() => setOtpModal(order._id)} 
+                className="px-4 py-2 text-sm font-medium bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors flex items-center gap-1.5"
+            >
+                <CheckCircleIcon className="w-3.5 h-3.5" /> Mark Delivered
+            </button>
+        )}
+
+        {/* Cancel option */}
+        {order.status !== "Delivered" && order.status !== "Cancelled" && (
+            <button 
+                onClick={() => setCancelModal(order._id)} 
+                className="px-4 py-2 text-sm font-medium bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors flex items-center gap-1.5"
+            >
+                <XCircleIcon className="w-3.5 h-3.5" /> Cancel
+            </button>
+        )}
+    </div>
+)}
 
             {tab === "completed" && (
                 <div className="px-5 py-3 border-t border-app-border">

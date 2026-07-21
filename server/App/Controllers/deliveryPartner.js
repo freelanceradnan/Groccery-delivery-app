@@ -176,7 +176,8 @@ export const updateDeliveryStatus = async (req, res) => {
     try {
         const orderId = req.params.id; 
         const partnerId = req.partner?.id || req.user?.id; 
-        const { status } = req.body; 
+        const { status } = req.body;
+        console.log(orderId)
         if (!status) {
             return res.status(400).json({
                 success: false,

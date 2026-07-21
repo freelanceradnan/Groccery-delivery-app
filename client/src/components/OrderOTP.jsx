@@ -1,6 +1,7 @@
 import { KeyRoundIcon } from "lucide-react";
 
 export default function OrderOTP({ order }) {
+
   const otpString = order?.deliveryOtp ? String(order.deliveryOtp) : "";
   const showOtp =
     Boolean(otpString) &&

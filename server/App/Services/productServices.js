@@ -95,8 +95,17 @@ export const getMyProduct = async (id) => {
 };
 //create product
 export const addMyProduct = async (data) => {
+    
     try {
-        const newProduct = new Product(data);
+        const defaultReview={
+            rating:4.5,
+            reviewCount:12
+        }
+       
+        const newProduct = new Product({
+  ...data,
+  ...defaultReview,
+});
         const savedProduct = await newProduct.save();
         return { success: true, message: savedProduct };
     } catch (error) {

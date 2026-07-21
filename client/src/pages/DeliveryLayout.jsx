@@ -7,7 +7,8 @@ import { dummyDeliveryPartnerData } from "../assets/assets";
 export default function DeliveryLayout() {
     const navigate = useNavigate();
     const [partner, setPartner] = useState(null);
-
+   const DeliveryToken=localStorage.getItem('delivery_token')
+   const DeliveryUser=localStorage.getItem('delivery_user')
     useEffect(() => {
         if (dummyDeliveryPartnerData && dummyDeliveryPartnerData.length > 0) {
             setPartner(dummyDeliveryPartnerData[0]);
@@ -15,6 +16,8 @@ export default function DeliveryLayout() {
     }, [navigate]);
 
     const handleLogout = () => {
+        localStorage.removeItem('delivery_token')
+        localStorage.removeItem('delivery_user')
         navigate("/delivery/login");
     };
 

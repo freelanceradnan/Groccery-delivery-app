@@ -2,6 +2,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { DeliveryPartner, Order } from "../Models/DefaultModel.js";
+import mongoose from "mongoose";
 //login partener
 export const loginDeliveryPartnerService = async (email, password) => {
     try {
@@ -177,20 +178,24 @@ export const cancelDeliveryService = async (orderId, partnerId, reason) => {
 
 export const updateDeliveryStatusService = async (orderId, partnerId, status) => {
     try {
-      
-        const allowedStatuses = ["Packed", "Out for Delivery"];
+    
+        const validOrderId = new mongoose.Types.ObjectId(orderId);
+        const validPartnerId = new mongoose.Types.ObjectId(partnerId);
+       
+
+       
+        const allowedStatuses = ["Assigned", "Packed", "Out for Delivery", "Delivered", "Cancelled"];
         if (!allowedStatuses.includes(status)) {
             return { success: false, status: 400, message: "Invalid status update" };
         }
 
-      
         const newHistoryLog = {
             status: status,
             note: `Status updated to ${status}`,
             timestamp: new Date()
         };
 
-      
+
         const updatedOrder = await Order.findOneAndUpdate(
             { 
                 _id: orderId, 
