@@ -11,7 +11,7 @@ const OrderDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // 1. API এ id পাস করা হয়েছে
+
   const { data: rawData, isLoading } = useGetOrderDatailsByIdQuery(id);
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
 
@@ -133,18 +133,18 @@ const OrderDetails = () => {
               <div className="space-y-3">
                 {order?.items?.map((item, i) => 
                 {
-                   const filtered=product.find(c=>c._id===item.product)
+                   const filtered=product?.find(c=>c._id===item.product)
                   
                    return (
                     
                   <div key={i} className='flex items-center gap-3'>
-                    <img src={filtered.image} alt={filtered.name} className='size-10 rounded-lg object-cover' />
+                    <img src={filtered?.image} alt={filtered?.name} className='size-10 rounded-lg object-cover' />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#1B3022] truncate">{filtered.name}</p>
-                      <p className='text-xs text-gray-500'>x{item.quantity}</p>
+                      <p className="text-sm font-medium text-[#1B3022] truncate">{filtered?.name}</p>
+                      <p className='text-xs text-gray-500'>x{item?.quantity}</p>
                     </div>
                     <span className='font-semibold text-sm'>
-                      {currency}{(filtered.price * item.quantity).toFixed(2)}
+                      {currency}{(filtered?.price * item?.quantity).toFixed(2)}
                     </span>
                   </div>
                 )

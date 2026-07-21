@@ -3,25 +3,27 @@ import { TruckIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { dummyDashboardOrdersData, dummyDeliveryPartnerData } from "../assets/assets";
 import Loading from "../components/Loading";
-import { useGetAdminOrdersQuery, useUpdateAdminOrderStatusMutation } from "../Feature/ApiSlice";
+import { useGetAdminOrdersQuery, useGetAllDeliveryPartnerQuery, useUpdateAdminOrderStatusMutation } from "../Feature/ApiSlice";
 export default function AdminOrders() {
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
     const {data:allOrders}=useGetAdminOrdersQuery()
     const [updateStatus]=useUpdateAdminOrderStatusMutation()
+    const {data:AllDeliveryPartners}=useGetAllDeliveryPartnerQuery()
     const [orders, setOrders] = useState([]);
     
     const [partners, setPartners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [assignModal, setAssignModal] = useState(null);
     const [selectedPartner, setSelectedPartner] = useState("");
-
+    console.log()
     useEffect(() => {
-        if(allOrders){
+        if(allOrders && AllDeliveryPartners){
             setLoading(true)
             setOrders(allOrders)
+            setPartners(AllDeliveryPartners)
             setLoading(false)
         }
-    }, [allOrders]);
+    }, [allOrders,AllDeliveryPartners]);
 
     const handleStatusChange = async (id, newStatus) => {
         try {
@@ -40,6 +42,11 @@ export default function AdminOrders() {
 
     const handleAssign = async () => {
         if (!assignModal || !selectedPartner) return;
+        try {
+            
+        } catch (error) {
+            
+        }
         toast.success("Delivery partner assigned!");
         setAssignModal(null);
         setSelectedPartner("");
@@ -133,37 +140,70 @@ export default function AdminOrders() {
 
             {/* Assign Modal */}
             {assignModal && (
-                <>
-                    <div className="fixed inset-0 bg-app-cream/80 backdrop-blur z-50" onClick={() => setAssignModal(null)} />
-                    <div className="fixed inset-0 z-50 flex-center p-4">
-                        <div className="bg-white rounded-2xl p-6 w-full max-w-sm animate-fade-in">
-                            <h3 className="text-lg font-semibold text-app-green mb-4">Assign Delivery Partner</h3>
-                            {partners.length === 0 ? (
-                                <p className="text-sm text-zinc-500 mb-4">No active delivery partners. Please onboard a partner first.</p>
-                            ) : (
-                                <div className="space-y-2 mb-5 max-h-60 overflow-y-auto">
-                                    {partners.map((p) => (
-                                        <label key={p._id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedPartner === p._id ? "border-app-green bg-app-green/5" : "border-app-border hover:bg-app-cream"}`}>
-                                            <input type="radio" name="partner" value={p._id} checked={selectedPartner === p._id} onChange={() => setSelectedPartner(p._id)} className="text-app-green" />
-                                            <div className="size-8 rounded-full bg-app-green flex-center">
-                                                <span className="text-white text-xs font-semibold">{p.name.charAt(0)}</span>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-zinc-900">{p.name}</p>
-                                                <p className="text-xs text-zinc-500 capitalize">{p.vehicleType} • {p.phone}</p>
-                                            </div>
-                                        </label>
-                                    ))}
-                                </div>
-                            )}
-                            <div className="flex gap-2">
-                                <button onClick={() => setAssignModal(null)} className="flex-1 py-2.5 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-xl hover:bg-zinc-200 transition-colors">Cancel</button>
-                                <button onClick={handleAssign} disabled={!selectedPartner} className="flex-1 py-2.5 text-sm font-medium text-white bg-app-green rounded-xl hover:bg-app-green-light transition-colors disabled:opacity-50">Assign</button>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
+  <>
+    
+    <div 
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity" 
+      onClick={() => setAssignModal(null)} 
+    />
+
+   
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl relative z-10 my-auto animate-fade-in">
+        <h3 className="text-lg font-semibold text-app-green mb-4">Assign Delivery Partner</h3>
+        
+        {partners.length === 0 ? (
+          <p className="text-sm text-zinc-500 mb-4">
+            No active delivery partners. Please onboard a partner first.
+          </p>
+        ) : (
+          <div className="space-y-2 mb-5 max-h-60 overflow-y-auto pr-1">
+            {partners.map((p) => (
+              <label 
+                key={p._id} 
+                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                  selectedPartner === p._id ? "border-app-green bg-app-green/5" : "border-app-border hover:bg-app-cream"
+                }`}
+              >
+                <input 
+                  type="radio" 
+                  name="partner" 
+                  value={p._id} 
+                  checked={selectedPartner === p._id} 
+                  onChange={() => setSelectedPartner(p._id)} 
+                  className="text-app-green" 
+                />
+                <div className="size-8 rounded-full bg-[#032E15] flex items-center justify-center shrink-0">
+                  <span className="text-white text-xs font-semibold">{p.name.charAt(0)}</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-zinc-900 truncate">{p.name}</p>
+                  <p className="text-xs text-zinc-500 capitalize truncate">{p.vehicleType} • {p.phone}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setAssignModal(null)} 
+            className="flex-1 py-2.5 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-xl hover:bg-zinc-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleAssign} 
+            disabled={!selectedPartner} 
+            className="flex-1 py-2.5 text-sm font-medium text-white bg-[#032E15] rounded-xl hover:bg-app-green-light transition-colors disabled:opacity-50"
+          >
+            Assign
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
+)}
         </>
     );
 }

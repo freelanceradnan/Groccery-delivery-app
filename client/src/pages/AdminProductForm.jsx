@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "lucide-react";
 import Loading from "../components/Loading";
-import { categoriesData, dummyProducts } from "../assets/assets";
+import { categoriesData } from "../assets/assets";
+import { useAddAdminProductMutation, useGetSingleProductInfoQuery, useUpdateAdminProductMutation, useUploadImageMutation } from "../Feature/ApiSlice";
+import toast from "react-hot-toast";
 
 export default function AdminProductForm() {
+    const navigate=useNavigate()
     const { id } = useParams();
+    const [upload]=useUploadImageMutation()
+    const [addProduct]=useAddAdminProductMutation()
+    const [updateProduct]=useUpdateAdminProductMutation()
+const { data: ProductInfo, isLoading, error } = useGetSingleProductInfoQuery(id, {
+  skip: !id,
+});
+
     const isEdit = Boolean(id);
 
     const [loading, setLoading] = useState(isEdit);
@@ -17,8 +27,8 @@ export default function AdminProductForm() {
         description: "",
         price: "",
         originalPrice: "",
-        image: "",
         category: "",
+        image:"",
         unit: "",
         stock: "",
         isOrganic: false,
@@ -26,22 +36,60 @@ export default function AdminProductForm() {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (isEdit) {
-                const foundProduct = dummyProducts.find((p) => p._id === id);
-                if (foundProduct) {
-                    setFormData(foundProduct);
-                }
+           
+            if (isEdit && ProductInfo) {
+               setFormData(ProductInfo)
             }
             setLoading(false);
         };
         fetchData();
-    }, [id, isEdit]);
+    }, [id, isEdit,ProductInfo]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        // Handle form submission and API call here
+   const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSaving(true);
+
+  try {
+    let finalImageUrl = formData.image; 
+    if (imageFile) {
+      const formdataUpload = new FormData();
+      formdataUpload.append("image", imageFile);
+
+      const data = await upload(formdataUpload).unwrap();
+      finalImageUrl = data.url || data.secure_url; 
+      if (!finalImageUrl) {
+        toast.error('Please provide a valid image!');
+        setSaving(false);
+        return;
+      }
+    }
+
+    const payload = {
+      ...formData,
+      image: finalImageUrl,
+      price: Number(formData.price), 
+      originalPrice: formData.originalPrice ? Number(formData.originalPrice) : 0,
+      stock: Number(formData.stock)
     };
 
+    if (isEdit) {
+      const response = await updateProduct({ id:id, data: payload }).unwrap();
+      toast.success('Product updated successfully!');
+      navigate('/admin/products')
+      
+    } else {
+      const response = await addProduct(payload).unwrap();
+      toast.success('Product added successfully!');
+      navigate('/admin/products')
+    
+    }
+
+  } catch (error) {
+    toast.error(error?.data?.message || 'Something went wrong!');
+  } finally {
+    setSaving(false); 
+  }
+};
     return (
         <>
             <div className="bg-white rounded-2xl shadow-sm border border-app-border overflow-hidden">
@@ -105,7 +153,7 @@ export default function AdminProductForm() {
                         </div>
 
                         <div className="pt-6 border-t border-app-border flex justify-end">
-                            <button disabled={saving} type="submit" className="px-6 py-2.5 bg-app-orange text-white font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50">
+                            <button disabled={saving} type="submit" className="px-6 py-2.5 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50">
                                 {saving ? "Saving..." : "Save Product"}
                             </button>
                         </div>

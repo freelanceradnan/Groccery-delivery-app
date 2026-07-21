@@ -36,7 +36,7 @@ router.post('/product',authMiddleware,adminMiddleware,ProductController.addProdu
 router.put('/product/:id',authMiddleware,adminMiddleware,ProductController.updateProduct)
 router.delete('/product/:id',authMiddleware,adminMiddleware,ProductController.deleteProduct)
 //product with upload
-router.post('/upload', upload.single('myFile'), uploader);
+router.post('/upload', upload.single('image'), uploader);
 
 //order apis
 router.post('/createorder',authMiddleware,OrderController.CreateOrder)

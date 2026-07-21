@@ -10,7 +10,7 @@ const MyOrders = () => {
     const {data:AllOrders=[]}=useGetUserAllOrdersQuery()
     const {data:allProducts}=useGetAllProductQuery()
     
-    // Fixed typo: VITE_CURRENCY_SYMBOL
+   
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -122,43 +122,20 @@ setProducts(allProducts)
                                 </div>
 
                                 {/* items-image */}
-                                <div className='flex items-center gap-2 mb-3'>
-                                    {
-                                    
-                                     <div className="space-y-3">
-                {order?.items?.map((item, i) => 
-                {
-                   const filtered=products.find(c=>c._id===item.product)
-                  
-                   return (
-                         <img 
-                                            key={filtered?._id || filtered?.id || `${filtered?._id}-${index}`} 
-                                            alt={filtered?.name} 
-                                            src={filtered?.image} 
-                                            className='size-12 sm:size-16 rounded-lg object-cover border border-black/20'
-                                        />
-                 
-                )
-                }
-                
-                
-               
+                                <div className="flex flex-wrap items-center gap-3">
+  {order?.items?.map((item, i) => {
+    const filtered = products.find((c) => c._id === item.product);
 
-
-                )}
-              </div>
-                                    // order.items.slice(0, 4).map((item, index) => (
-                                   
-                                    // ))
-                                    
-                                    
-                                    }
-                                    {order.items.length > 4 && (
-                                        <div className='size-12 sm:size-16 rounded-lg bg-amber-200 flex items-center justify-center text-xs font-semibold text-light'>
-                                            +{order.items.length - 4}
-                                        </div>
-                                    )}
-                                </div>
+    return (
+      <img
+        key={filtered?._id || item.product || i}
+        alt={filtered?.name || "Product image"}
+        src={filtered?.image}
+        className="size-12 sm:size-16 rounded-lg object-cover border border-black/20"
+      />
+    );
+  })}
+</div>
 
                                 {/* total items-price */}
                                 <div className="flex justify-between items-center pt-3 text-sm">

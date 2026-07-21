@@ -87,14 +87,15 @@ export const createDeliveryPartner = async (req, res) => {
 export const updateDeliveryPartner = async (req, res) => {
     try {
         const partnerId = req.params.id; 
-
+        const status=req.body
+        console.log(status)
         if (!partnerId) {
             return res.status(400).json({
                 success: false,
                 message: "Delivery partner ID is required"
             });
         }
-        const result = await updateDeliveryPartnerService(partnerId, req.body);
+        const result = await updateDeliveryPartnerService(partnerId, status);
 
         if (!result.success) {
             return res.status(result.status).json({

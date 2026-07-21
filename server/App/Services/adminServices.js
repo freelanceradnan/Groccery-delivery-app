@@ -91,21 +91,13 @@ export const createDeliveryPartnerService = async (partnerData) => {
 
 //update delivery parner 
 
-export const updateDeliveryPartnerService = async (partnerId, updateData) => {
-    console.log("Service Recieved:", partnerId, updateData);
+export const updateDeliveryPartnerService = async (partnerId, status) => {
     try {
-        const { name, phone, vehiclesType, isActive } = updateData;
-        const dataToUpdate = {};
-        
-        if (name) dataToUpdate.name = name;
-        if (phone) dataToUpdate.phone = phone;
-        if (vehiclesType) dataToUpdate.vehiclesType = vehiclesType; 
-
-        if (isActive !== undefined) dataToUpdate.isActive = isActive;
+        const isActiveValue = typeof status === 'object' && status !== null ? status.status : status;
 
         const updatedPartner = await DeliveryPartner.findByIdAndUpdate(
             partnerId,
-            { $set: dataToUpdate },
+            { $set: { isActive: isActiveValue } },
             { returnDocument: 'after', runValidators: true }
         ).select("-password"); 
          

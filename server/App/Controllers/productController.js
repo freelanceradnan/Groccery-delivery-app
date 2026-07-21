@@ -53,7 +53,7 @@ export const getProduct=async(req,res)=>{
 //create product post
 export const addProduct = async (req, res) => {
    
-    const { data } = req.body; 
+    const data  = req.body; 
     if(!data){
          return res.status(400).json({ success: false, message: "data not found!" });
     }
@@ -77,8 +77,8 @@ export const addProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     const { id } = req.params;
-    const { data } = req.body; 
-     
+    const  data  = req.body; 
+    
     try {
         
         if (!id || !data) {
@@ -121,13 +121,13 @@ export const deleteProduct = async (req, res) => {
 
      
         if (!result.success) {
-            return res.status(400).json({ success: false, message: result.message || "delete failed" });
+            return res.status(400).json({ success: false, message: result.message || "product stock updated failed" });
         }
 
       
         return res.status(200).json({ 
             success: true, 
-            message: "Product deleted success!", 
+            message: "Product stock update success!", 
             product: result.product 
         });
 

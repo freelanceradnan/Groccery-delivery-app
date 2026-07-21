@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PlusIcon, EditIcon, XIcon } from "lucide-react";
 import Loading from "../components/Loading";
-import { useDeleteAdminProductMutation, useGetAllProductQuery } from "../Feature/ApiSlice";
+import {  useGetAllProductQuery, useReduceProductStockMutation } from "../Feature/ApiSlice";
 import toast from "react-hot-toast";
 
 
 export default function AdminProducts() {
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
    const{data:allProduct}=useGetAllProductQuery()
-   const [deleteProduct]=useDeleteAdminProductMutation()
+   
+   const [updateStock]=useReduceProductStockMutation()
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -22,17 +23,17 @@ export default function AdminProducts() {
     }, [allProduct]);
 
     const handleMarkOutOfStock = async (id, name) => {
-        if (!window.confirm(`Are you sure you want to delete "${name}" Product?`)) return;
+        if (!window.confirm(`Are you sure you want to Reduce Stock "${name}" Product as 0?`)) return;
         try {
-         const response=await deleteProduct(id).unwrap()
+         const response=await updateStock(id).unwrap()
          if(response.success===true){
-            toast.success('product delete success!')
+            toast.success('product stock updated success!')
          }
          else{
-            toast.error('failed to delete product')
+            toast.error('failed to product stock!')
          }
         } catch (error) {
-            toast.error('failed to delete product')
+            toast.error('failed to product stock failed!')
         }
     };
 

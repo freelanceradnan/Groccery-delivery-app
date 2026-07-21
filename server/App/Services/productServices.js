@@ -123,13 +123,15 @@ export const updateMyProduct = async (id, data) => {
 export const deleteMyProduct = async (id) => {
     try {
         
-        const updatedProduct = await Product.findByIdAndDelete(id)
+        const updatedProduct = await Product.findByIdAndUpdate({_id:id},{
+            $set:{stock: 0}
+        })
        
         if (!updatedProduct) {
-            return { success: false, message: "failed to delete product" };
+            return { success: false, message: "Failed to Remove Product Stock!" };
         }
 
-        return { success: true,message:"product deleted success!" };
+        return { success: true,message:"Product Stock Reduce Success!" };
     } catch (error) {
         return { success: false, message: error.message };
     }
