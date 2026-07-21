@@ -215,6 +215,14 @@ export const ApiSlice = createApi({
      body:{status}
      }),
      invalidatesTags:['partner']
+    }),
+    assignDeliveryPartner: builder.mutation({
+  query: ({ orderId, partnerId }) => ({
+    url: `/orders/${orderId}/assign`,
+    method: 'PUT',
+    body: { partnerId } 
+  }),
+  invalidatesTags:['orders']
     })
   }),
 });
@@ -242,5 +250,6 @@ export const {
   useAddAdminProductMutation,
   useGetAllDeliveryPartnerQuery,
   useCreateDeliveryPartnerMutation,
-  useUpdateDeliveryPartnerStatusMutation
+  useUpdateDeliveryPartnerStatusMutation,
+  useAssignDeliveryPartnerMutation
 } = ApiSlice;

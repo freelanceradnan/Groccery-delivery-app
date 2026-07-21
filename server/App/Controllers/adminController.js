@@ -88,7 +88,7 @@ export const updateDeliveryPartner = async (req, res) => {
     try {
         const partnerId = req.params.id; 
         const status=req.body
-        console.log(status)
+        
         if (!partnerId) {
             return res.status(400).json({
                 success: false,
@@ -122,9 +122,9 @@ export const updateDeliveryPartner = async (req, res) => {
 
 export const assignDeliveryPartner = async (req, res) => {
     try {
-        const orderId = req.params.id; 
-        const { partnerId } = req.body;
-        console.log(orderId,partnerId)
+        const orderId = req.params.id;    
+    const { partnerId } = req.body;   
+
         if (!orderId || !partnerId) {
             return res.status(400).json({
                 success: false,

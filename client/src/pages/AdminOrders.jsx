@@ -3,19 +3,20 @@ import { TruckIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { dummyDashboardOrdersData, dummyDeliveryPartnerData } from "../assets/assets";
 import Loading from "../components/Loading";
-import { useGetAdminOrdersQuery, useGetAllDeliveryPartnerQuery, useUpdateAdminOrderStatusMutation } from "../Feature/ApiSlice";
+import { useAssignDeliveryPartnerMutation, useGetAdminOrdersQuery, useGetAllDeliveryPartnerQuery, useUpdateAdminOrderStatusMutation } from "../Feature/ApiSlice";
 export default function AdminOrders() {
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
     const {data:allOrders}=useGetAdminOrdersQuery()
     const [updateStatus]=useUpdateAdminOrderStatusMutation()
     const {data:AllDeliveryPartners}=useGetAllDeliveryPartnerQuery()
+    const [assignpartner]=useAssignDeliveryPartnerMutation()
     const [orders, setOrders] = useState([]);
     
     const [partners, setPartners] = useState([]);
     const [loading, setLoading] = useState(true);
     const [assignModal, setAssignModal] = useState(null);
     const [selectedPartner, setSelectedPartner] = useState("");
-    console.log()
+    const [selectedOrder,setSelectedOrder]=useState(null)
     useEffect(() => {
         if(allOrders && AllDeliveryPartners){
             setLoading(true)
@@ -43,7 +44,12 @@ export default function AdminOrders() {
     const handleAssign = async () => {
         if (!assignModal || !selectedPartner) return;
         try {
-            
+           
+          const response = await assignpartner({ 
+  orderId: selectedOrder, 
+  partnerId: selectedPartner 
+}).unwrap();
+          
         } catch (error) {
             
         }
@@ -107,7 +113,7 @@ export default function AdminOrders() {
                                         <td className="px-6 py-4">
                                             {order.deliveryPartner ? (
                                                 <div className="flex items-center gap-2">
-                                                    <div className="size-6 rounded-full bg-app-green flex-center">
+                                                    <div className="size-6 rounded-full bg-[#032e15] flex justify-center items-center">
                                                         <span className="text-white text-[10px] font-semibold">{order.deliveryPartner.name?.charAt(0)}</span>
                                                     </div>
                                                     <div>
@@ -116,7 +122,7 @@ export default function AdminOrders() {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <button onClick={() => { setAssignModal(order._id); setSelectedPartner(""); }} className="px-3 py-1.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors flex items-center gap-1">
+                                                <button onClick={() => { setAssignModal(order._id); setSelectedOrder(order._id); }} className="px-3 py-1.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors flex items-center gap-1">
                                                     <TruckIcon className="size-3" /> Assign
                                                 </button>
                                             )}
