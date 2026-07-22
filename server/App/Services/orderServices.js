@@ -41,21 +41,26 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
 
     const method = paymentMethod ? String(paymentMethod).trim().toLowerCase() : 'cash';
     const isOnlinePayment = method === "card" || method === "stripe";
-
+    const currentStatus = "Placed";
     const newOrderPayload = {
-      user: userid,
-      items: orderItems,
-      shippingAddress,
-      paymentMethod: method,
-      subtotal,
-      deliveryFee,
-      tax,
-      total,
-      status: "Placed" ,
-      isPaid: false, 
-      isActive: method === "cash",
-      statusHistory: [{ status: isOnlinePayment ? "Pending" : "Placed", timestamp: new Date() }]
-    };
+  user: userid,
+  items: orderItems,
+  shippingAddress, 
+  paymentMethod: method,
+  subtotal,
+  deliveryFee,
+  tax,
+  total,
+  status: currentStatus, 
+  isPaid: false,
+  isActive: method === "cash",
+  statusHistory: [
+    {
+      status: currentStatus,
+      timestamp: new Date(),
+    },
+  ],
+};
 
     const order = await Order.create(newOrderPayload);
 
