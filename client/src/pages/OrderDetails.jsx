@@ -9,6 +9,8 @@ import {
   useGetAllProductQuery,
   useGetOrderDatailsByIdQuery,
 } from "../Feature/ApiSlice";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../Feature/CartSlice";
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -22,7 +24,12 @@ const OrderDetails = () => {
   const [livelocation, setLiveLocation] = useState({ lat: "", lng: "" });
   const { data: allproduct } = useGetAllProductQuery();
   const [product, setProduct] = useState([]);
+const dispatch = useDispatch();
 
+    useEffect(() => {
+      
+        dispatch(clearCart());
+    }, [dispatch]);
   useEffect(() => {
     if (rawData) {
       const currentOrder = Array.isArray(rawData) ? rawData[0] : rawData;
