@@ -37,7 +37,7 @@ app.set('etag', false);
 ConnectDB();
 
 // connection route
-app.get('/api/test-env', (req, res) => {
+app.use('/api/test-env', (req, res) => {
   res.json({
     adminEmails: process.env.ADMIN_EMAILS || "Not Found",
     nodeEnv: process.env.NODE_ENV || "Not Found",

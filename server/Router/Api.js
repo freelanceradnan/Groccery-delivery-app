@@ -19,13 +19,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const router=express.Router()
 
-app.get('/api/test-env', (req, res) => {
-  res.json({
-    adminEmails: process.env.ADMIN_EMAILS || "Not Found",
-    nodeEnv: process.env.NODE_ENV || "Not Found",
-    hasStripeSecret: !!process.env.STRIPE_SECRET_KEY, // Security-র জন্য boolean (true/false) দেখাচ্ছে
-  });
-});
+
 //default 
 router.get('/',function(req,res){
 res.status(200).json({'message':'Api is ok!'})
