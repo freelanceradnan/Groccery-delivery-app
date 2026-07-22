@@ -11,12 +11,13 @@ import helmet from "helmet";
 import { MAX_JSON_SIZE, MAX_REQUEST, MAX_REQUEST_TIME } from "./App/Config/Config.js";
 import { ConnectDB } from "./App/Config/ConnectDB.js";
 import router from "./Router/Api.js";
+import { StripeWebHook } from "./App/Controllers/Webhooks.js";
 
 const PORT = process.env.PORT || 5000; 
 
 // initiate express app
 const app = express();
-
+app.post('/api/stripe',express.raw({type:'application/json'}),StripeWebHook)
 // middleware
 app.use(hpp());
 app.use(cors());

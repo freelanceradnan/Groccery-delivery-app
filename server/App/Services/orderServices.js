@@ -4,17 +4,16 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '../../../server/.env' });
 
 //create order
-export const createMyOrder = async (items, shippingAddress, paymentMethod, userid) => {
+export const createMyOrder = async (items, shippingAddress, paymentMethod, userid, origin) => {
   try {
     const productIds = items.map((i) => i.product);
-
     const products = await Product.find({ _id: { $in: productIds } });
-   
+    
     const productMap = {};
     products.forEach((p) => {
       productMap[p._id.toString()] = p; 
     });
-
+//stock checkout
     for (const item of items) {
       const product = productMap[item.product];
       if (!product || (product.stock ?? 0) < item.quantity) {
@@ -24,8 +23,6 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
 
     const orderItems = items.map((item) => {
       const dbProduct = productMap[item.product];
-      if (!dbProduct) throw new Error(`Product ${item.product} not found`);
-
       return {
         product: dbProduct._id,
         quantity: item.quantity,
@@ -47,46 +44,40 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       deliveryFee,
       tax,
       total,
-      status: "Placed", 
-      statusHistory: [
-        { 
-          status: "Placed", 
-          timestamp: new Date() 
-        }
-      ]
+      status: "Placed",
+      isPaid: paymentMethod === "COD", 
+      statusHistory: [{ status: "Placed", timestamp: new Date() }]
     };
 
-  
     const order = await Order.create(newOrder);
 
-   
     await User.findByIdAndUpdate(userid, {
       $push: { orders: order._id }
     });
-    
-    if (paymentMethod === "card") {
-    const stripe=new Stripe(process.env.STRIPE_SECRET_KEY)
 
-const session = await stripe.checkout.sessions.create({
-  success_url: `${req.headers.origin}/orders?clearCart=true`,
-  cancel_url: `${req.headers.origin}/checkout`,
-  line_items: [
-    {
-      price_data:{
-        currency:'usd',
-        product_data:{
-          name:'Payment grocceries'
-        },
-        unit_amount:Math.round(total * 1000)
-      }
-    },
-  ],
-  mode: 'payment',
-  metadata:{orderId:order.id}
-});
-return res.json({url:session.url})
+  
+    if (paymentMethod === "card") {
+      const session = await stripe.checkout.sessions.create({
+        success_url: `${origin}/orders?clearCart=true`,
+        cancel_url: `${origin}/checkout`,
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: { name: 'Grocery Order Payment' },
+              unit_amount: Math.round(total * 100) 
+            },
+            quantity: 1
+          },
+        ],
+        mode: 'payment',
+        metadata: { orderId: order._id.toString() }
+      });
+
+      return { success: true, url: session.url };
     }
 
+    
     for (const item of orderItems) {
       await Product.findByIdAndUpdate(
         item.product,

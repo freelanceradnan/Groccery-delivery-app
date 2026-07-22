@@ -2,7 +2,7 @@ import { CheckCircleIcon, ClockIcon, MapPinIcon, PhoneIcon, TruckIcon, XCircleIc
 import { statusColors } from '../assets/assets';
 
 
-export default function DeliveryOrderCard({ order, tab, handleUpdateStatus, setOtpModal, setCancelModal,setDeliveryId}) {
+export default function DeliveryOrderCard({ order, tab, handleUpdateStatus, setOtpModal, setCancelModal}) {
    
     const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
     const user = typeof order.user === "object" ? order.user : { name: "Customer", email: "", phone: "" };
