@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { User } from "../Models/DefaultModel.js";
 import { TokenEncorde } from "../Utils/Token.js";
-console.log("ADMIN EMAILS FROM ENV:", process.env.ADMIN_EMAILS);
 //check if admin
+
 const getAdminStatus = (email) => {
   if (!email) return false;
   const adminEmails = process.env.ADMIN_EMAILS
