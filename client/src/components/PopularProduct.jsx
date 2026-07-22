@@ -25,7 +25,7 @@ const PopularProduct = () => {
                         <h2 className='text-2xl font-semibold'>Popular Products</h2>
                         <p className='text-sm text-light mt-1'>Top-rated products this season</p>
                     </div>
-                    <Link className='text-sm font-semibold text-orange-500 hover:text-orange-400 flex items-center gap-1 transition-colors'>
+                    <Link className='text-sm font-semibold text-orange-500 hover:text-orange-400 flex items-center gap-1 transition-colors' to="/products">
                     View All <ArrowRightIcon className='size-4'/>
                     </Link>
                 </div>

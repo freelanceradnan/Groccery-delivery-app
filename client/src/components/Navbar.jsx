@@ -7,6 +7,7 @@ import { CartContext } from '../contexts/CartContext';
 import toast from 'react-hot-toast';
 import { ApiSlice } from '../Feature/ApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
+
 const Navbar = () => {
     const cart=useSelector(state=>state.cart)
      const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -106,7 +107,7 @@ navigate('/login')
           </div>
         )}
         <div onClick={() => setUserMenuOpen(false)}>
-          {!user && <Link to="/login" className='dropdown-link'><UserIconSign size={16} />Sign In</Link>}
+          {!user && <Link to="/login" className='dropdown-link'><UserIcon size={16} />Sign In</Link>}
           {user && <Link to="/orders" className='dropdown-link'><PackageIcon size={16} />My Orders</Link>}
           {user && <Link to="/addresses" className='dropdown-link'><MapPinIcon size={16} />Addresses</Link>}
           <Link to="/products" className='dropdown-link md:hidden'><ArrowUpRightIcon size={16} />Products</Link>
@@ -117,9 +118,11 @@ navigate('/login')
               Admin panel
             </Link>
           )}
-          <div className='border-t border-slate-300'>
+         {user && (
+           <div className='border-t border-slate-300'>
              <button className='dropdown-link md:hidden w-full' onClick={logoutUser}><LogOut size={16} />Logout</button>
           </div>
+         )}
         </div>
       </div>
     </>
