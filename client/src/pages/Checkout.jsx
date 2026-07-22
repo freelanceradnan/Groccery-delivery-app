@@ -44,7 +44,7 @@ const Checkout = () => {
         { Key: "payment", label: "Payment", icon: CreditCardIcon },
         { Key: "review", label: "Review", icon: CheckIcon }
     ];
-   
+  //submit order 
 const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -60,27 +60,24 @@ const handlePlaceOrder = async (e) => {
             paymentMethod
         };
 
-        // API Request
         const response = await order(orderData).unwrap();
 
         if (response?.success) {
+            
             if (paymentMethod === 'card') {
                 if (response.url) {
                     toast.success('Redirecting to Stripe Payment...');
-                    
+                   
                     window.location.href = response.url; 
-                    dispatch(clearCart());
                 } else {
                     toast.error('Stripe URL is missing from server response!');
-                    console.error('Server returned success true, but no URL:', response);
                 }
                 return;
             }
 
-            // 📦 ২. Cash on Delivery (COD)
+
             if (response.order?._id) {
                 toast.success('Order Placed Successfully!');
-                dispatch(clearCart());
                 navigate(`/orders/${response.order._id}`);
             }
         } else {

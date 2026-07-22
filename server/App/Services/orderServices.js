@@ -64,7 +64,7 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
 
       try {
         const session = await stripe.checkout.sessions.create({
-          success_url: `${clientUrl}/orders?payment_success=true&order_id=${order._id}`,
+          success_url: `${clientUrl}/orders/${order._id}`,
           cancel_url: `${clientUrl}/checkout?payment_cancelled=true`,
           line_items: [
             {
