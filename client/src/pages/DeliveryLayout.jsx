@@ -10,10 +10,10 @@ export default function DeliveryLayout() {
    const DeliveryToken=localStorage.getItem('delivery_token')
    const DeliveryUser=localStorage.getItem('delivery_user')
     useEffect(() => {
-        if (dummyDeliveryPartnerData && dummyDeliveryPartnerData.length > 0) {
-            setPartner(dummyDeliveryPartnerData[0]);
+        if (DeliveryUser && DeliveryUser.length > 0) {
+            setPartner(JSON.parse(DeliveryUser));
         }
-    }, [navigate]);
+    }, [DeliveryUser]);
 
     const handleLogout = () => {
         localStorage.removeItem('delivery_token')

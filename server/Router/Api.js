@@ -18,8 +18,12 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 
 const router=express.Router()
-
+//default 
+router.get('/',function(req,res){
+res.status(200).json({'message':'Api is ok!'})
+})
 //login
+
 router.post('/register',register)
 router.post('/login',login)
 //forgot password
