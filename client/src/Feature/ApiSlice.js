@@ -4,13 +4,13 @@ const BaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_SERVER,
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("token");
-    const deliverytoken=localStorage.getItem('delivery_token')
+    const deliveryToken = localStorage.getItem("delivery_token");
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
+    } else if (deliveryToken) {
+      headers.set("authorization", `Bearer ${deliveryToken}`);
     }
-    if(deliverytoken){
-       headers.set("authorization", `Bearer ${deliverytoken}`);
-    }
+
     return headers;
   },
 });

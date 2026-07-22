@@ -13,9 +13,13 @@ const adminMiddleware = async (req, res, next) => {
     }
 
   
-    const adminEmails = process.env.ADMIN_EMAILS 
-      ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase()) 
-      : [];
+    const rawEnv = process.env.ADMIN_EMAILS || "";
+
+const adminEmails = rawEnv
+  .replace(/['"]/g, "") 
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
     
     if (!adminEmails.includes(user.email.toLowerCase())) {
