@@ -37,13 +37,7 @@ app.set('etag', false);
 ConnectDB();
 
 // connection route
-app.use('/api/test-env', (req, res) => {
-  res.json({
-    adminEmails: process.env.ADMIN_EMAILS || "Not Found",
-    nodeEnv: process.env.NODE_ENV || "Not Found",
-    hasStripeSecret: !!process.env.STRIPE_SECRET_KEY,
-  });
-});
+
 //main router
 app.use('/api', router);
 

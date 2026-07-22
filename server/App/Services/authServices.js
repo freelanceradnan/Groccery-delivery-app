@@ -2,14 +2,25 @@ import bcrypt from "bcryptjs";
 import { User } from "../Models/DefaultModel.js";
 import { TokenEncorde } from "../Utils/Token.js";
 //check if admin
-
 const getAdminStatus = (email) => {
   if (!email) return false;
-  const adminEmails = process.env.ADMIN_EMAILS
-    ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase())
-    : [];
+
+  const rawEnv = process.env.ADMIN_EMAILS || "";
+  
+  const adminEmails = rawEnv
+    .replace(/['"]/g, '') 
+    .split(",")
+    .map((e) => e.trim().toLowerCase());
+
   return adminEmails.includes(email.toLowerCase());
 };
+// const getAdminStatus = (email) => {
+//   if (!email) return false;
+//   const adminEmails = process.env.ADMIN_EMAILS
+//     ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase())
+//     : [];
+//   return adminEmails.includes(email.toLowerCase());
+// };
 
 // register
 export async function RegisterMyUser(name, email, password) {
