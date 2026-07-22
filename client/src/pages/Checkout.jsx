@@ -45,38 +45,54 @@ const Checkout = () => {
         { Key: "review", label: "Review", icon: CheckIcon }
     ];
    
-    const handlePlaceOrder = async (e) => {
-        e.preventDefault()
-        setLoading(true);
+const handlePlaceOrder = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      const orderData={
-    items:items.map((item)=>({
-        image:item.product.image,
-        product:item.product._id,
-        quantity:item.quantity
-    })),
-    shippingAddress:address,
-    paymentMethod
-    }
-    const response=await order(orderData).unwrap()
-  
-    if(response.success===true){
-        toast.success('Order Placed SuccessFully!')
-        setTimeout(() => {
-        dispatch(clearCart())
-        navigate(`/orders/${response.order._id}`)
-        
-        }, 1000);
-    }
-    else{
-        toast.error('Failed to Proccess Order!Try Next Time!')
-    }
-    setLoading(false)
+        const orderData = {
+            items: items.map((item) => ({
+                image: item.product.image,
+                product: item.product._id,
+                quantity: item.quantity
+            })),
+            shippingAddress: address,
+            paymentMethod
+        };
+
+        // API Request
+        const response = await order(orderData).unwrap();
+
+        if (response?.success) {
+            if (paymentMethod === 'card') {
+                if (response.url) {
+                    toast.success('Redirecting to Stripe Payment...');
+                    
+                    window.location.href = response.url; 
+                    dispatch(clearCart());
+                } else {
+                    toast.error('Stripe URL is missing from server response!');
+                    console.error('Server returned success true, but no URL:', response);
+                }
+                return;
+            }
+
+            // 📦 ২. Cash on Delivery (COD)
+            if (response.order?._id) {
+                toast.success('Order Placed Successfully!');
+                dispatch(clearCart());
+                navigate(`/orders/${response.order._id}`);
+            }
+        } else {
+            toast.error(response?.message || 'Failed to process order!');
+        }
     } catch (error) {
-        
+        console.error("Order Execution Error:", error);
+        toast.error(error?.data?.message || 'Something went wrong while placing order!');
+    } finally {
+        setLoading(false);
     }
-    
-    };
+};
 
 
     if (items.length === 0) {

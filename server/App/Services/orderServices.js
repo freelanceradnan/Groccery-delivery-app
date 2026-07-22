@@ -1,23 +1,27 @@
 import { Product, Order, User } from '../Models/DefaultModel.js'; 
-import Stripe from 'stripe'
+import Stripe from 'stripe';
 import dotenv from 'dotenv'; 
-dotenv.config({ path: '../../../server/.env' });
-
+dotenv.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 //create order
+
 export const createMyOrder = async (items, shippingAddress, paymentMethod, userid, origin) => {
   try {
     const productIds = items.map((i) => i.product);
     const products = await Product.find({ _id: { $in: productIds } });
-    
+
     const productMap = {};
     products.forEach((p) => {
-      productMap[p._id.toString()] = p; 
+      productMap[p._id.toString()] = p;
     });
-//stock checkout
+
     for (const item of items) {
       const product = productMap[item.product];
       if (!product || (product.stock ?? 0) < item.quantity) {
-        return { success: false, message: `Product ${product ? product.name : ''} is out of stock or insufficient` };
+        return { 
+          success: false, 
+          message: `Product ${product ? product.name : ''} is out of stock or insufficient` 
+        };
       }
     }
 
@@ -26,7 +30,7 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
       return {
         product: dbProduct._id,
         quantity: item.quantity,
-        price: dbProduct.price 
+        price: dbProduct.price
       };
     });
 
@@ -35,93 +39,104 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
     const tax = Math.round(subtotal * 0.08 * 100) / 100;
     const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
 
-    const newOrder = {
-      user: userid, 
+    const method = paymentMethod ? String(paymentMethod).trim().toLowerCase() : 'cash';
+    const isOnlinePayment = method === "card" || method === "stripe";
+
+    const newOrderPayload = {
+      user: userid,
       items: orderItems,
-      shippingAddress, 
-      paymentMethod,
+      shippingAddress,
+      paymentMethod: method,
       subtotal,
       deliveryFee,
       tax,
       total,
-      status: "Placed",
-      isPaid: paymentMethod === "COD", 
-      statusHistory: [{ status: "Placed", timestamp: new Date() }]
+      status: "Placed" ,
+      isPaid: false, 
+      isActive: method === "cash",
+      statusHistory: [{ status: isOnlinePayment ? "Pending" : "Placed", timestamp: new Date() }]
     };
 
-    const order = await Order.create(newOrder);
+    const order = await Order.create(newOrderPayload);
 
+    if (isOnlinePayment) {
+      const clientUrl = origin || process.env.CLIENT_URL || 'http://localhost:5173';
+
+      try {
+        const session = await stripe.checkout.sessions.create({
+          success_url: `${clientUrl}/orders?payment_success=true&order_id=${order._id}`,
+          cancel_url: `${clientUrl}/checkout?payment_cancelled=true`,
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: { name: 'Grocery Order Payment' },
+                unit_amount: Math.round(total * 100)
+              },
+              quantity: 1
+            },
+          ],
+          mode: 'payment',
+          metadata: { orderId: order._id.toString() }
+        });
+
+        return { success: true, url: session.url, orderId: order._id };
+
+      } catch (stripeErr) {
+        console.error("Stripe Session Creation Failed:", stripeErr.message);
+       
+        await Order.findByIdAndDelete(order._id);
+        return { success: false, message: `Stripe Payment Error: ${stripeErr.message}` };
+      }
+    }
+
+  
     await User.findByIdAndUpdate(userid, {
       $push: { orders: order._id }
     });
 
-  
-    if (paymentMethod === "card") {
-      const session = await stripe.checkout.sessions.create({
-        success_url: `${origin}/orders?clearCart=true`,
-        cancel_url: `${origin}/checkout`,
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: { name: 'Grocery Order Payment' },
-              unit_amount: Math.round(total * 100) 
-            },
-            quantity: 1
-          },
-        ],
-        mode: 'payment',
-        metadata: { orderId: order._id.toString() }
-      });
-
-      return { success: true, url: session.url };
-    }
-
-    
     for (const item of orderItems) {
       await Product.findByIdAndUpdate(
         item.product,
-        { $inc: { stock: -item.quantity } } 
+        { $inc: { stock: -item.quantity } }
       );
     }
 
     return { success: true, order };
 
   } catch (error) {
-    console.error("Service Error Details:", error); 
-    return { success: false, message: error.message || "Something went wrong while creating the order" };
+    console.error("Service Error Details:", error);
+    return { 
+      success: false, 
+      message: error.message || "Something went wrong while creating the order" 
+    };
   }
 };
 //get single order
-export const getMyOrders=async(status,userid)=>{
-   
-    try {
-        const where = {
-      user: userid 
-    };
-    where.$or = [
-  { paymentMethod: 'cash' }, 
-  { paymentMethod: 'card', isPaid: true } 
-];
+// getMyOrders Service
+export const getMyOrders = async (status, userid) => {
+  try {
+    const where = { user: userid };
+
     if (status && status !== 'all') {
       where.status = status;
     }
-    const orders = await Order.find(where)
-      .populate('deliveryPartner', 'name phone') 
-      .sort({ createdAt: -1 }); 
 
-    
-    return ({
+    const orders = await Order.find(where)
+      .populate('deliveryPartner', 'name phone')
+      .sort({ createdAt: -1 });
+
+    return {
       success: true,
       orders
-    });
-    } catch (error) {
-        return ({
+    };
+  } catch (error) {
+    return {
       success: false,
       message: "Failed to fetch orders"
-    });
-    }
-}
+    };
+  }
+};
 //get seperate order
 export const getMyOrder=async(id,userid)=>{
     try {
@@ -187,15 +202,8 @@ export const updateOrderStatusService = async (id, status, note) => {
 //getall order
 export const getAllOrdersService = async () => {
   try {
-    const where = {
-      $or: [
-        { paymentMethod: 'cash' },
-        { paymentMethod: 'card', isPaid: true }
-      ]
-    };
-
-   
-    const orders = await Order.find(where)
+  
+    const orders = await Order.find({})
       .populate('user', 'name email') 
       .populate('deliveryPartner', 'name phone email') 
       .sort({ createdAt: -1 }); 

@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 
 // initiate express app
 const app = express();
-app.post('/api/stripe',express.raw({type:'application/json'}),StripeWebHook)
+app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), StripeWebHook);
 // middleware
 app.use(hpp());
 app.use(cors());

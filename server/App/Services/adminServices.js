@@ -4,9 +4,7 @@ import bcrypt from "bcryptjs";
 export const getAdminStatesService = async () => {
     try {
         const activeOrdersFilter = {
-            $nor: [
-        { paymentMethod: "card", isPaid: false }
-    ]
+
         };
 
         const [

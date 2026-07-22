@@ -1,56 +1,42 @@
+import Stripe from 'stripe';
+import { Order } from '../Models/DefaultModel.js'; // আপনার Order Model-এর সঠিক পাথ দিন
+import dotenv from 'dotenv'; 
+dotenv.config({ path: '../../../server/.env' });
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const StripeWebHook = async (req, res) => {
+  const sig = req.headers['stripe-signature'];
   let event;
 
-  if (endpointSecret) {
-    const signature = req.headers['stripe-signature'];
-    try {
-      event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret);
-    } catch (err) {
-      console.log(`⚠️ Webhook signature verification failed: ${err.message}`);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-  } else {
-    event = req.body;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error(`Webhook Error: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Handle Events
-  switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object;
-      const orderId = session.metadata?.orderId;
+  // 🔴 পেমেন্ট সফল হলে ডাটাবেজ আপডেট লজিক
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    
+    // session থেকে orderId বের করুন
+    const orderId = session.metadata?.orderId || session.client_reference_id;
 
-      if (orderId) {
-        const updatedOrder = await Order.findByIdAndUpdate(
-          orderId,
-          { isPaid: true, status: "Paid" },
-          { new: true } 
-        );
+    console.log("Processing Order ID:", orderId); // 👈 এটি টার্মিনালে চেক করুন
 
-      //stock decrease
-        if (updatedOrder && Array.isArray(updatedOrder.items)) {
-          for (const item of updatedOrder.items) {
-            await Product.findByIdAndUpdate(
-              item.product,
-              { $inc: { stock: -item.quantity } }
-            );
-          }
-        }
-      }
-      break;
+    if (orderId) {
+      await Order.findByIdAndUpdate(orderId, {
+        isPaid: true,
+        status: 'Paid',
+        isActive: true,
+      });
+      console.log("✅ Order updated to Paid successfully!");
     }
-
-    case 'payment_intent.payment_failed': {
-      const session = event.data.object;
-      const orderId = session.metadata?.orderId;
-      if (orderId) {
-        await Order.findByIdAndDelete(orderId);
-      }
-      break;
-    }
-
-    default:
-      console.log(`Unhandled event type ${event.type}`);
   }
 
-  return res.json({ received: true });
+  res.status(200).json({ received: true });
 };

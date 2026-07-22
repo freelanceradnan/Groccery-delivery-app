@@ -1,7 +1,7 @@
 import { createMyOrder, getAllOrdersService, getMyOrder, getMyOrders, getOrderLocationService, updateOrderStatusService } from "../Services/orderServices.js";
 //create order
 export const CreateOrder = async (req, res) => {
-    const userid=req.user.id
+    const userid = req.user.id;
     try {
         const { items, shippingAddress, paymentMethod } = req.body;
         
@@ -9,10 +9,10 @@ export const CreateOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: "No Order Items" });
         }
 
-       
-        const result = await createMyOrder(items, shippingAddress, paymentMethod,userid);
+        const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+        
+        const result = await createMyOrder(items, shippingAddress, paymentMethod, userid, origin);
 
-       
         if (!result || !result.success) {
             return res.status(400).json({ 
                 success: false, 
@@ -20,11 +20,7 @@ export const CreateOrder = async (req, res) => {
             });
         }
 
-       
-        return res.status(201).json({ 
-            success: true, 
-            order: result.order
-        });
+        return res.status(201).json(result);
 
     } catch (error) {
         console.error("Controller Order Error:", error);
