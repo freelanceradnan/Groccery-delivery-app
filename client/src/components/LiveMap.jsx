@@ -34,32 +34,32 @@ export default function LiveMap({ order }) {
   const hasHomeCoordinates = Boolean(!isNaN(homeLat) && !isNaN(homeLng) && homeLat !== 0 && homeLng !== 0);
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-black/20 h-[280px]">
-      {hasHomeCoordinates ? (
-        <MapContainer
-          center={[homeLat, homeLng]}
-          zoom={15}
-          className="h-full w-full"
-          zoomControl={false}
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <div className="relative z-0 isolate rounded-2xl overflow-hidden border border-black/20 h-[280px]">
+  {hasHomeCoordinates ? (
+    <MapContainer
+      center={[homeLat, homeLng]}
+      zoom={15}
+      className="h-full w-full z-0"
+      zoomControl={false}
+    >
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          <Marker position={[homeLat, homeLng]} icon={homeIcon}>
-            <Popup>My Home Address</Popup>
-          </Marker>
+      <Marker position={[homeLat, homeLng]} icon={homeIcon}>
+        <Popup>My Home Address</Popup>
+      </Marker>
 
-          <MapUpdater center={[homeLat, homeLng]} />
-        </MapContainer>
-      ) : (
-        <div className="h-full bg-app-green/5 flex items-center justify-center">
-          <div className="text-center">
-            <MapPinIcon className="size-8 text-app-green/40 mx-auto mb-2" />
-            <p className="text-sm text-app-green/50 font-medium">
-              Waiting for home address location...
-            </p>
-          </div>
-        </div>
-      )}
+      <MapUpdater center={[homeLat, homeLng]} />
+    </MapContainer>
+  ) : (
+    <div className="h-full bg-app-green/5 flex items-center justify-center">
+      <div className="text-center">
+        <MapPinIcon className="size-8 text-app-green/40 mx-auto mb-2" />
+        <p className="text-sm text-app-green/50 font-medium">
+          Waiting for home address location...
+        </p>
+      </div>
     </div>
+  )}
+</div>
   );
 }

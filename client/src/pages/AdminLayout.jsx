@@ -39,6 +39,7 @@ if(!isAdmin){
                                 key={link.to}
                                 to={link.to}
                                 end={true}
+                                onClick={()=>window.scrollTo(0,0)}
                                 className={({ isActive }) => `flex items-center gap-3 p-2.5 rounded-md text-sm transition-colors ${
                                     isActive
                                         ? "bg-[#032E15] text-white"

@@ -107,13 +107,13 @@ navigate('/login')
           </div>
         )}
         <div onClick={() => setUserMenuOpen(false)}>
-          {!user && <Link to="/login" className='dropdown-link'><UserIcon size={16} />Sign In</Link>}
-          {user && <Link to="/orders" className='dropdown-link'><PackageIcon size={16} />My Orders</Link>}
-          {user && <Link to="/addresses" className='dropdown-link'><MapPinIcon size={16} />Addresses</Link>}
-          <Link to="/products" className='dropdown-link md:hidden'><ArrowUpRightIcon size={16} />Products</Link>
-           <Link to="/deals" className='dropdown-link md:hidden'><ArrowUpRightIcon size={16} />Deals</Link>
+          {!user && <Link to="/login" className='dropdown-link' onClick={()=>window.scrollTo(0,0)}><UserIcon size={16} />Sign In</Link>}
+          {user && <Link to="/orders" className='dropdown-link' onClick={()=>window.scrollTo(0,0)}><PackageIcon size={16} />My Orders</Link>}
+          {user && <Link to="/addresses" className='dropdown-link' onClick={()=>window.scrollTo(0,0)}><MapPinIcon size={16} />Addresses</Link>}
+          <Link to="/products" className='dropdown-link md:hidden' onClick={()=>window.scrollTo(0,0)}><ArrowUpRightIcon size={16} />Products</Link>
+           <Link to="/deals" className='dropdown-link md:hidden' onClick={()=>window.scrollTo(0,0)}><ArrowUpRightIcon size={16} />Deals</Link>
           {user?.isAdmin && (
-            <Link to="/admin/products" className='dropdown-link'>
+            <Link to="/admin/products" className='dropdown-link' onClick={()=>window.scrollTo(0,0)}>
               <ShieldIcon size={16} />
               Admin panel
             </Link>
