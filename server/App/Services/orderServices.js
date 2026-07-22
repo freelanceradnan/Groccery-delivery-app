@@ -1,4 +1,8 @@
 import { Product, Order, User } from '../Models/DefaultModel.js'; 
+import Stripe from 'stripe'
+import dotenv from 'dotenv'; 
+dotenv.config({ path: '../../../server/.env' });
+
 //create order
 export const createMyOrder = async (items, shippingAddress, paymentMethod, userid) => {
   try {
@@ -61,7 +65,26 @@ export const createMyOrder = async (items, shippingAddress, paymentMethod, useri
     });
     
     if (paymentMethod === "card") {
-      //
+    const stripe=new Stripe(process.env.STRIPE_SECRET_KEY)
+
+const session = await stripe.checkout.sessions.create({
+  success_url: `${req.headers.origin}/orders?clearCart=true`,
+  cancel_url: `${req.headers.origin}/checkout`,
+  line_items: [
+    {
+      price_data:{
+        currency:'usd',
+        product_data:{
+          name:'Payment grocceries'
+        },
+        unit_amount:Math.round(total * 1000)
+      }
+    },
+  ],
+  mode: 'payment',
+  metadata:{orderId:order.id}
+});
+return res.json({url:session.url})
     }
 
     for (const item of orderItems) {
