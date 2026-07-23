@@ -10,8 +10,7 @@ export const ConnectDB = async () => {
   const ConnectUrl = process.env.MONGODB_URL;
 
   if (!ConnectUrl) {
-    console.log("MongoDB Connection URL Missing in Environment Variables!");
-    return;
+    throw new Error("MongoDB Connection URL Missing in Environment Variables!");
   }
 
   if (cached.conn) {
@@ -19,13 +18,13 @@ export const ConnectDB = async () => {
   }
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false, 
+      bufferCommands: false,
       autoIndex: true,
     };
 
-    cached.promise = mongoose.connect(ConnectUrl, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(ConnectUrl, opts).then((mongooseInstance) => {
       console.log("MongoDB connection success!");
-      return mongoose;
+      return mongooseInstance;
     });
   }
 
@@ -33,7 +32,8 @@ export const ConnectDB = async () => {
     cached.conn = await cached.promise;
   } catch (error) {
     cached.promise = null;
-    console.log("MongoDB connection failed!", error.message);
+    cached.conn = null;
+    console.error("MongoDB connection failed!", error.message);
     throw error;
   }
 

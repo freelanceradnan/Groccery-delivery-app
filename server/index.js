@@ -35,13 +35,16 @@ app.set('etag', false);
 
 // connect db
 app.use(async (req, res, next) => {
-    try {
-        await ConnectDB();
-        next();
-    } catch (error) {
-        
-        res.status(500).json({ error: "Database Connection Failed" });
-    }
+  try {
+    await ConnectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection middleware error:", error.message);
+    res.status(500).json({ 
+      success: false, 
+      error: "Database Connection Failed" 
+    });
+  }
 });
 
 // connection route
