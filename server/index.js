@@ -9,9 +9,9 @@ import mongoose from "mongoose";
 import cors from 'cors';
 import helmet from "helmet";
 import { MAX_JSON_SIZE, MAX_REQUEST, MAX_REQUEST_TIME } from "./App/Config/Config.js";
-import { ConnectDB } from "./App/Config/ConnectDB.js";
 import router from "./Router/Api.js";
 import { StripeWebHook } from "./App/Controllers/Webhooks.js";
+import { ConnectDB } from "./App/Config/ConnectDB.js";
 
 const PORT = process.env.PORT || 5000; 
 
@@ -34,7 +34,15 @@ app.use(ratelimiter);
 app.set('etag', false);
 
 // connect db
-ConnectDB();
+app.use(async (req, res, next) => {
+    try {
+        await ConnectDB();
+        next();
+    } catch (error) {
+        
+        res.status(500).json({ error: "Database Connection Failed" });
+    }
+});
 
 // connection route
 
